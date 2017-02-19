@@ -34,6 +34,11 @@ impl<T> SparseVector<T> {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    #[inline]
+    pub fn iter<'a>(&'a self) -> Iter<'a, T> {
+        Iter(self.0.iter())
+    }
 }
 
 impl<T> Default for SparseVector<T> {
@@ -58,15 +63,13 @@ impl<T> FromIterator<(usize, T)> for SparseVector<T> {
     }
 }
 
-impl<'a, T> IntoIterator for &'a SparseVector<T>
-    where T: Clone
-{
+impl<T> IntoIterator for SparseVector<T> {
     type Item = (usize, T);
-    type IntoIter = Iter<'a, T>;
+    type IntoIter = IntoIter<T>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        Iter(self.0.iter())
+        IntoIter(self.0.into_iter())
     }
 }
 
@@ -74,10 +77,9 @@ impl<'b, T, U> Dot<&'b SparseVector<U>> for SparseVector<T>
     where T: Clone + Into<f64>,
           U: Clone + Into<f64>
 {
-    #[inline]
     fn dot(&self, rhs: &'b SparseVector<U>) -> f64 {
-        let iter = rhs.into_iter().map(|(k, v)| (k, v.clone())).ordered_map_iterator();
-        self.into_iter()
+        let iter = rhs.iter().map(|(k, v)| (k, v.clone())).ordered_map_iterator();
+        self.iter()
             .inner_join_map(iter)
             .fold(0.0f64,
                   |sum, (_, (lhs, rhs))| sum + (lhs.clone().into() * rhs.clone().into()))
@@ -91,7 +93,6 @@ impl<'b, T, U> AddScaled<&'b SparseVector<U>, f64> for SparseVector<T>
 {
     type Output = SparseVector<T>;
 
-    #[inline]
     fn add_scaled(mut self, rhs: &'b SparseVector<U>, scale: f64) -> Self::Output {
         self.add_assign_scaled(rhs, scale);
         self
@@ -104,7 +105,6 @@ impl<'a, 'b, T, U> AddScaled<&'b SparseVector<U>, f64> for &'a SparseVector<T>
 {
     type Output = SparseVector<T>;
 
-    #[inline]
     fn add_scaled(self, rhs: &'b SparseVector<U>, scale: f64) -> Self::Output {
         self.clone().add_scaled(rhs, scale)
     }
@@ -114,12 +114,11 @@ impl<'b, T, U> AddAssignScaled<&'b SparseVector<U>, f64> for SparseVector<T>
     where T: Clone + Default + PartialEq + Add<T, Output = T> + From<f64>,
           U: Clone + Into<f64>
 {
-    #[inline]
     fn add_assign_scaled(&mut self, rhs: &'b SparseVector<U>, scale: f64) {
         let zero = T::default();
         self.0 = {
-            let iter = rhs.into_iter().ordered_map_iterator();
-            let outer_join = self.into_iter().outer_join(iter);
+            let iter = rhs.iter().ordered_map_iterator();
+            let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {
                         (Some(l), Some(r)) => l + (r.into() * scale).into(),
@@ -130,10 +129,9 @@ impl<'b, T, U> AddAssignScaled<&'b SparseVector<U>, f64> for SparseVector<T>
                     if value == zero {
                         None
                     } else {
-                        Some((index, value))
+                        Some(Item((index, value)))
                     }
                 })
-                .map(Item)
                 .collect()
         }
     }
@@ -168,12 +166,11 @@ impl<'b, T, U> AddAssign<&'b SparseVector<U>> for SparseVector<T>
     where T: Clone + Default + PartialEq + Add<T, Output = T>,
           U: Clone + Into<T>
 {
-    #[inline]
     fn add_assign(&mut self, rhs: &'b SparseVector<U>) {
         let zero = T::default();
         self.0 = {
-            let iter = rhs.into_iter().ordered_map_iterator();
-            let outer_join = self.into_iter().outer_join(iter);
+            let iter = rhs.iter().ordered_map_iterator();
+            let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {
                         (Some(l), Some(r)) => l + r.into(),
@@ -184,10 +181,9 @@ impl<'b, T, U> AddAssign<&'b SparseVector<U>> for SparseVector<T>
                     if value == zero {
                         None
                     } else {
-                        Some((index, value))
+                        Some(Item((index, value)))
                     }
                 })
-                .map(Item)
                 .collect()
         }
     }
@@ -222,12 +218,11 @@ impl<'b, T, U> SubAssign<&'b SparseVector<U>> for SparseVector<T>
     where T: Clone + Default + PartialEq + Sub<T, Output = T>,
           U: Clone + Into<T>
 {
-    #[inline]
     fn sub_assign(&mut self, rhs: &'b SparseVector<U>) {
         let zero = T::default();
         self.0 = {
-            let iter = rhs.into_iter().ordered_map_iterator();
-            let outer_join = self.into_iter().outer_join(iter);
+            let iter = rhs.iter().ordered_map_iterator();
+            let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {
                         (Some(l), Some(r)) => l - r.into(),
@@ -238,10 +233,9 @@ impl<'b, T, U> SubAssign<&'b SparseVector<U>> for SparseVector<T>
                     if value == zero {
                         None
                     } else {
-                        Some((index, value))
+                        Some(Item((index, value)))
                     }
                 })
-                .map(Item)
                 .collect()
         };
     }
@@ -253,7 +247,6 @@ impl<T, U> Mul<U> for SparseVector<T>
 {
     type Output = SparseVector<T>;
 
-    #[inline]
     fn mul(self, rhs: U) -> Self::Output {
         let zero = T::default();
         let rhs_as_t = rhs.into();
@@ -284,7 +277,6 @@ impl<T, U> MulAssign<U> for SparseVector<T>
     where T: Clone + Default + PartialEq + MulAssign<T>,
           U: Into<T>
 {
-    #[inline]
     fn mul_assign(&mut self, rhs: U) {
         let into: T = rhs.into();
         for lhs in &mut self.0 {
@@ -299,7 +291,6 @@ impl<T, U> Div<U> for SparseVector<T>
 {
     type Output = SparseVector<T>;
 
-    #[inline]
     fn div(self, rhs: U) -> Self::Output {
         let zero = T::default();
         let rhs_as_t = rhs.into();
@@ -330,7 +321,6 @@ impl<T, U> DivAssign<U> for SparseVector<T>
     where T: Clone + Default + PartialEq + DivAssign<T>,
           U: Into<T>
 {
-    #[inline]
     fn div_assign(&mut self, rhs: U) {
         let into: T = rhs.into();
         for lhs in &mut self.0 {
@@ -344,7 +334,7 @@ impl<T> fmt::Debug for SparseVector<T>
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let _ = write!(f, "[");
-        for (fmt_idx, (index, value)) in self.into_iter().enumerate() {
+        for (fmt_idx, (index, value)) in self.iter().enumerate() {
             try! {
                 if fmt_idx > 0 { write!(f, ", ({}, {:?})", index, value.clone()) }
                 else { write!(f, "({}, {:?})", index, value.clone()) }
@@ -367,6 +357,7 @@ impl<I> Iterator for OrderedMapIteratorWrapper<I>
         self.0.next()
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         self.0.size_hint()
     }
@@ -380,6 +371,7 @@ impl<I, K, V> OrderedMapIterator for OrderedMapIteratorWrapper<I>
 }
 
 trait OrderedMapIterable: Sized {
+    #[inline]
     fn ordered_map_iterator(self) -> OrderedMapIteratorWrapper<Self> {
         OrderedMapIteratorWrapper(self)
     }
@@ -392,12 +384,14 @@ pub struct IntoIter<T>(<Vec<Item<T>> as IntoIterator>::IntoIter);
 impl<T> Iterator for IntoIter<T> {
     type Item = (usize, T);
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         self.0.next().map(|i| i.0)
     }
 }
 
 impl<T> ExactSizeIterator for IntoIter<T> {
+    #[inline]
     fn len(&self) -> usize {
         self.0.len()
     }
@@ -414,6 +408,8 @@ impl<'a, T> Iterator for Iter<'a, T>
     where T: Clone
 {
     type Item = (usize, T);
+
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         self.0.next().map(|i| i.0.clone())
     }
@@ -422,6 +418,7 @@ impl<'a, T> Iterator for Iter<'a, T>
 impl<'a, T> ExactSizeIterator for Iter<'a, T>
     where T: Clone
 {
+    #[inline]
     fn len(&self) -> usize {
         self.0.len()
     }

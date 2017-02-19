@@ -34,6 +34,11 @@ impl<T> DenseVector<T> {
         self.len() == 0
     }
 
+    #[inline]
+    pub fn iter<'a>(&'a self) -> Iter<'a, T> {
+        Iter(self.0.iter())
+    }
+
     fn resize_if_necessary(&mut self, min_len: usize)
         where T: Clone + Default
     {
@@ -76,26 +81,13 @@ impl<T> IntoIterator for DenseVector<T> {
     }
 }
 
-impl<'a, T> IntoIterator for &'a DenseVector<T>
-    where T: Clone
-{
-    type Item = T;
-    type IntoIter = Iter<'a, T>;
-
-    #[inline]
-    fn into_iter(self) -> Self::IntoIter {
-        Iter(self.0.iter())
-    }
-}
-
 impl<'b, T, U> Dot<&'b DenseVector<U>> for DenseVector<T>
     where T: Clone + Into<f64>,
           U: Clone + Into<f64>
 {
-    #[inline]
     fn dot(&self, rhs: &'b DenseVector<U>) -> f64 {
-        let iter = rhs.into_iter();
-        self.into_iter()
+        let iter = rhs.iter();
+        self.iter()
             .zip(iter)
             .fold(0.0f64,
                   |sum, (lhs, rhs)| sum + (lhs.clone().into() * rhs.into()))
@@ -132,9 +124,8 @@ impl<'b, T, U> AddAssignScaled<&'b DenseVector<U>> for DenseVector<T>
     where T: Clone + Default + AddAssign<T> + From<f64>,
           U: Clone + Into<f64>
 {
-    #[inline]
     fn add_assign_scaled(&mut self, rhs: &'b DenseVector<U>, scale: f64) {
-        let iter = rhs.into_iter();
+        let iter = rhs.iter();
         self.resize_if_necessary(rhs.len());
         for (l, r) in self.0.iter_mut().zip(iter) {
             let scaled: T = (r.into() * scale).into();
@@ -172,9 +163,8 @@ impl<'b, T, U> AddAssign<&'b DenseVector<U>> for DenseVector<T>
     where T: Clone + Default + AddAssign<T>,
           U: Clone + Into<T>
 {
-    #[inline]
     fn add_assign(&mut self, rhs: &'b DenseVector<U>) {
-        let iter = rhs.into_iter();
+        let iter = rhs.iter();
         self.resize_if_necessary(rhs.len());
         for (lhs, rhs) in self.0.iter_mut().zip(iter) {
             lhs.0 += rhs.into();
@@ -211,9 +201,8 @@ impl<'b, T, U> SubAssign<&'b DenseVector<U>> for DenseVector<T>
     where T: Clone + Default + SubAssign<T>,
           U: Clone + Into<T>
 {
-    #[inline]
     fn sub_assign(&mut self, rhs: &'b DenseVector<U>) {
-        let iter = rhs.into_iter();
+        let iter = rhs.iter();
         self.resize_if_necessary(rhs.len());
         for (lhs, rhs) in self.0.iter_mut().zip(iter) {
             lhs.0 -= rhs.into();
@@ -250,7 +239,6 @@ impl<T, U> MulAssign<U> for DenseVector<T>
     where T: Clone + Default + MulAssign<T>,
           U: Into<T>
 {
-    #[inline]
     fn mul_assign(&mut self, rhs: U) {
         let into: T = rhs.into();
         for lhs in &mut self.0 {
@@ -302,7 +290,7 @@ impl<T> fmt::Debug for DenseVector<T>
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let _ = write!(f, "[");
-        for (index, item) in self.into_iter().enumerate() {
+        for (index, item) in self.iter().enumerate() {
             try! {
                 if index > 0 { write!(f, ", {:?}", item) }
                 else { write!(f, "{:?}", item) }
@@ -323,12 +311,14 @@ impl<T> Iterator for IntoIter<T> {
         self.0.next().map(|i| i.0)
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         self.0.size_hint()
     }
 }
 
 impl<T> ExactSizeIterator for IntoIter<T> {
+    #[inline]
     fn len(&self) -> usize {
         self.0.len()
     }
@@ -346,6 +336,7 @@ impl<'a, T> Iterator for Iter<'a, T>
         self.0.next().map(|i| i.0.clone())
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         self.0.size_hint()
     }
@@ -354,6 +345,7 @@ impl<'a, T> Iterator for Iter<'a, T>
 impl<'a, T> ExactSizeIterator for Iter<'a, T>
     where T: Clone
 {
+    #[inline]
     fn len(&self) -> usize {
         self.0.len()
     }
