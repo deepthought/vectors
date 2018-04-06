@@ -8,6 +8,7 @@ use std::ops::{Add, Sub, Mul, Div};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
 
 use ordered_iter::OrderedMapIterator;
+use num_traits::Zero;
 
 use {Dot, AddScaled, AddAssignScaled};
 
@@ -88,7 +89,7 @@ impl<'b, T, U> Dot<&'b SparseVector<U>> for SparseVector<T>
 }
 
 impl<'b, T, U> AddScaled<&'b SparseVector<U>, f64> for SparseVector<T>
-    where T: Clone + Default + PartialEq + Add<T, Output = T> + From<f64>,
+    where T: Clone + Zero + Add<T, Output = T> + From<f64>,
           U: Clone + Into<f64>
 {
     type Output = SparseVector<T>;
@@ -100,7 +101,7 @@ impl<'b, T, U> AddScaled<&'b SparseVector<U>, f64> for SparseVector<T>
 }
 
 impl<'a, 'b, T, U> AddScaled<&'b SparseVector<U>, f64> for &'a SparseVector<T>
-    where T: Clone + Default + PartialEq + Add<T, Output = T> + From<f64>,
+    where T: Clone + Zero + Add<T, Output = T> + From<f64>,
           U: Clone + Into<f64>
 {
     type Output = SparseVector<T>;
@@ -111,11 +112,10 @@ impl<'a, 'b, T, U> AddScaled<&'b SparseVector<U>, f64> for &'a SparseVector<T>
 }
 
 impl<'b, T, U> AddAssignScaled<&'b SparseVector<U>, f64> for SparseVector<T>
-    where T: Clone + Default + PartialEq + Add<T, Output = T> + From<f64>,
+    where T: Clone + Zero + Add<T, Output = T> + From<f64>,
           U: Clone + Into<f64>
 {
     fn add_assign_scaled(&mut self, rhs: &'b SparseVector<U>, scale: f64) {
-        let zero = T::default();
         self.0 = {
             let iter = rhs.iter().ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);
@@ -126,7 +126,7 @@ impl<'b, T, U> AddAssignScaled<&'b SparseVector<U>, f64> for SparseVector<T>
                         (None, Some(r)) => (r.into() * scale).into(),
                         _ => unreachable!(),
                     };
-                    if value == zero {
+                    if value.is_zero() {
                         None
                     } else {
                         Some(Item((index, value)))
@@ -138,7 +138,7 @@ impl<'b, T, U> AddAssignScaled<&'b SparseVector<U>, f64> for SparseVector<T>
 }
 
 impl<'b, T, U> Add<&'b SparseVector<U>> for SparseVector<T>
-    where T: Clone + Default + PartialEq + Add<T, Output = T>,
+    where T: Clone + Zero + Add<T, Output = T>,
           U: Clone + Into<T>
 {
     type Output = SparseVector<T>;
@@ -151,7 +151,7 @@ impl<'b, T, U> Add<&'b SparseVector<U>> for SparseVector<T>
 }
 
 impl<'a, 'b, T, U> Add<&'b SparseVector<U>> for &'a SparseVector<T>
-    where T: Clone + Default + PartialEq + Add<T, Output = T>,
+    where T: Clone + Zero + Add<T, Output = T>,
           U: Clone + Into<T>
 {
     type Output = SparseVector<T>;
@@ -163,11 +163,10 @@ impl<'a, 'b, T, U> Add<&'b SparseVector<U>> for &'a SparseVector<T>
 }
 
 impl<'b, T, U> AddAssign<&'b SparseVector<U>> for SparseVector<T>
-    where T: Clone + Default + PartialEq + Add<T, Output = T>,
+    where T: Clone + Zero + Add<T, Output = T>,
           U: Clone + Into<T>
 {
     fn add_assign(&mut self, rhs: &'b SparseVector<U>) {
-        let zero = T::default();
         self.0 = {
             let iter = rhs.iter().ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);
@@ -178,7 +177,7 @@ impl<'b, T, U> AddAssign<&'b SparseVector<U>> for SparseVector<T>
                         (None, Some(r)) => r.into(),
                         _ => unreachable!(),
                     };
-                    if value == zero {
+                    if value.is_zero() {
                         None
                     } else {
                         Some(Item((index, value)))
@@ -190,7 +189,7 @@ impl<'b, T, U> AddAssign<&'b SparseVector<U>> for SparseVector<T>
 }
 
 impl<'b, T, U> Sub<&'b SparseVector<U>> for SparseVector<T>
-    where T: Clone + Default + PartialEq + Sub<T, Output = T>,
+    where T: Clone + Zero + Sub<T, Output = T>,
           U: Clone + Into<T>
 {
     type Output = SparseVector<T>;
@@ -203,7 +202,7 @@ impl<'b, T, U> Sub<&'b SparseVector<U>> for SparseVector<T>
 }
 
 impl<'a, 'b, T, U> Sub<&'b SparseVector<U>> for &'a SparseVector<T>
-    where T: Clone + Default + PartialEq + Sub<T, Output = T>,
+    where T: Clone + Zero + Sub<T, Output = T>,
           U: Clone + Into<T>
 {
     type Output = SparseVector<T>;
@@ -215,11 +214,10 @@ impl<'a, 'b, T, U> Sub<&'b SparseVector<U>> for &'a SparseVector<T>
 }
 
 impl<'b, T, U> SubAssign<&'b SparseVector<U>> for SparseVector<T>
-    where T: Clone + Default + PartialEq + Sub<T, Output = T>,
+    where T: Clone + Zero + Sub<T, Output = T>,
           U: Clone + Into<T>
 {
     fn sub_assign(&mut self, rhs: &'b SparseVector<U>) {
-        let zero = T::default();
         self.0 = {
             let iter = rhs.iter().ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);
@@ -230,7 +228,7 @@ impl<'b, T, U> SubAssign<&'b SparseVector<U>> for SparseVector<T>
                         (None, Some(r)) => r.into(),
                         _ => unreachable!(),
                     };
-                    if value == zero {
+                    if value.is_zero() {
                         None
                     } else {
                         Some(Item((index, value)))
@@ -242,17 +240,16 @@ impl<'b, T, U> SubAssign<&'b SparseVector<U>> for SparseVector<T>
 }
 
 impl<T, U> Mul<U> for SparseVector<T>
-    where T: Clone + Default + PartialEq + Mul<T, Output = T>,
+    where T: Clone + Zero + Mul<T, Output = T>,
           U: Into<T>
 {
     type Output = SparseVector<T>;
 
     fn mul(self, rhs: U) -> Self::Output {
-        let zero = T::default();
         let rhs_as_t = rhs.into();
         SparseVector::from_iter(self.into_iter().filter_map(|(index, value)| {
             let new_value = value * rhs_as_t.clone();
-            if new_value == zero {
+            if new_value.is_zero() {
                 None
             } else {
                 Some((index, new_value))
@@ -262,7 +259,7 @@ impl<T, U> Mul<U> for SparseVector<T>
 }
 
 impl<'a, T, U> Mul<U> for &'a SparseVector<T>
-    where T: Clone + Default + PartialEq + Mul<T, Output = T>,
+    where T: Clone + Zero + Mul<T, Output = T>,
           U: Into<T>
 {
     type Output = SparseVector<T>;
@@ -274,7 +271,7 @@ impl<'a, T, U> Mul<U> for &'a SparseVector<T>
 }
 
 impl<T, U> MulAssign<U> for SparseVector<T>
-    where T: Clone + Default + PartialEq + MulAssign<T>,
+    where T: Clone + Zero + MulAssign<T>,
           U: Into<T>
 {
     fn mul_assign(&mut self, rhs: U) {
@@ -286,17 +283,16 @@ impl<T, U> MulAssign<U> for SparseVector<T>
 }
 
 impl<T, U> Div<U> for SparseVector<T>
-    where T: Clone + Default + PartialEq + Div<T, Output = T>,
+    where T: Clone + Zero + Div<T, Output = T>,
           U: Into<T>
 {
     type Output = SparseVector<T>;
 
     fn div(self, rhs: U) -> Self::Output {
-        let zero = T::default();
         let rhs_as_t = rhs.into();
         SparseVector::from_iter(self.into_iter().filter_map(|(index, value)| {
             let new_value = value / rhs_as_t.clone();
-            if new_value == zero {
+            if new_value.is_zero() {
                 None
             } else {
                 Some((index, new_value))
@@ -306,7 +302,7 @@ impl<T, U> Div<U> for SparseVector<T>
 }
 
 impl<'a, T, U> Div<U> for &'a SparseVector<T>
-    where T: Clone + Default + PartialEq + Div<T, Output = T>,
+    where T: Clone + Zero + Div<T, Output = T>,
           U: Into<T>
 {
     type Output = SparseVector<T>;
@@ -318,7 +314,7 @@ impl<'a, T, U> Div<U> for &'a SparseVector<T>
 }
 
 impl<T, U> DivAssign<U> for SparseVector<T>
-    where T: Clone + Default + PartialEq + DivAssign<T>,
+    where T: Clone + Zero + DivAssign<T>,
           U: Into<T>
 {
     fn div_assign(&mut self, rhs: U) {
