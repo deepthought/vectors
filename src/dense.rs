@@ -544,6 +544,6 @@ mod test {
     #[test]
     fn debug() {
         let v = DenseVector::from_iter(vec![0.0, 0.25, 0.5, 0.75, 1.0].into_iter());
-        expect!(format!("{:?}", v)).to(be_equal_to("[0, 0.25, 0.5, 0.75, 1]"));
+        expect!(format!("{:?}", v)).to(be_equal_to("[0.0, 0.25, 0.5, 0.75, 1.0]"));
     }
 }
