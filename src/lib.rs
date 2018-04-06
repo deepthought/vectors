@@ -8,6 +8,7 @@
 #[macro_use(expect)]
 extern crate expectest;
 
+extern crate num_traits;
 extern crate ordered_iter;
 
 #[macro_use]

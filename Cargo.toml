@@ -3,7 +3,13 @@ authors = ["Vincent Esche <regexident@gmail.com>"]
 categories = ["science"]
 description = "Sparse & dense vectors for use in high dimensional vector spaces."
 documentation = "https://docs.rs/svm"
-keywords = ["vectors", "dense", "sparse", "vector-space", "machine-learning"]
+keywords = [
+    "vectors",
+    "dense",
+    "sparse",
+    "vector-space",
+    "linear-algebra",
+]
 license = "MPL-2.0"
 name = "vectors"
 readme = "README.md"
@@ -11,6 +17,7 @@ repository = "https://github.com/deepthought/vectors"
 version = "0.1.1"
 
 [dependencies]
+num-traits = "0.2.2"
 ordered_iter = "0.1.0"
 
 [dev-dependencies]
