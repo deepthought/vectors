@@ -575,6 +575,6 @@ mod test {
     #[test]
     fn debug() {
         let v = sparse_vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0)];
-        expect!(format!("{:?}", v)).to(be_equal_to("[(0, 0.2), (1, 0.5), (2, 1), (4, 2)]"));
+        expect!(format!("{:?}", v)).to(be_equal_to("[(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0)]"));
     }
 }
