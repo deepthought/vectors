@@ -10,11 +10,11 @@ impl<T> Dot for DenseVector<T>
     type Output = T;
 
     fn dot(&self, rhs: &Self) -> Self::Output {
-        let iter = rhs.iter();
-        self.iter()
+        let iter = rhs.components.iter();
+        self.components.iter()
             .zip(iter)
             .fold(T::zero(),
-                  |sum, (lhs, rhs)| sum + (lhs.clone() * rhs))
+                  |sum, (lhs, rhs)| sum + (lhs.clone() * rhs.clone()))
     }
 }
 

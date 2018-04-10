@@ -9,7 +9,7 @@ impl<T> fmt::Debug for DenseVector<T>
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let _ = write!(f, "[");
-        for (index, item) in self.iter().enumerate() {
+        for (index, item) in self.components.iter().enumerate() {
             try! {
                 if index > 0 { write!(f, ", {:?}", item) }
                 else { write!(f, "{:?}", item) }

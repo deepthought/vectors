@@ -25,21 +25,28 @@ impl<T> IntoIterator for DenseVector<T> {
 }
 
 pub struct IntoIter<T> {
+    index: usize,
     inner: <Vec<T> as IntoIterator>::IntoIter,
 }
 
 impl<T> IntoIter<T> {
     pub fn new(iter: <Vec<T> as IntoIterator>::IntoIter) -> Self {
-        IntoIter { inner: iter }
+        IntoIter { index: 0, inner: iter }
     }
 }
 
 impl<T> Iterator for IntoIter<T> {
-    type Item = T;
+    type Item = (usize, T);
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next()
+        let index = self.index;
+        if let Some(value) = self.inner.next() {
+            self.index += 1;
+            Some((index, value))
+        } else {
+            None
+        }
     }
 
     #[inline]
@@ -56,23 +63,30 @@ impl<T> ExactSizeIterator for IntoIter<T> {
 }
 
 pub struct Iter<'a, T> where T: 'a {
+    index: usize,
     inner: <&'a [T] as IntoIterator>::IntoIter,
 }
 
 impl<'a, T> Iter<'a, T> where T: 'a {
     pub fn new(iter: <&'a [T] as IntoIterator>::IntoIter) -> Self {
-        Iter { inner: iter }
+        Iter { index: 0, inner: iter }
     }
 }
 
 impl<'a, T> Iterator for Iter<'a, T>
     where T: Clone
 {
-    type Item = T;
+    type Item = (usize, T);
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|i| i.clone())
+        let index = self.index;
+        if let Some(value) = self.inner.next() {
+            self.index += 1;
+            Some((index, value.clone()))
+        } else {
+            None
+        }
     }
 
     #[inline]
@@ -100,14 +114,16 @@ mod test {
     fn from_iter() {
         let values = vec![0.1, 0.2, 0.3, 0.4, 0.5];
         let subject = DenseVector::from_iter(values.clone());
-        expect!(subject.components).to(be_equal_to(values));
+        let expected = values;
+        expect!(subject.components).to(be_equal_to(expected));
     }
 
     #[test]
     fn into_iter() {
         let values = vec![0.1, 0.2, 0.3, 0.4, 0.5];
         let subject = DenseVector::from_iter(values.clone());
+        let expected = vec![(0, 0.1), (1, 0.2), (2, 0.3), (3, 0.4), (4, 0.5)];
         let output: Vec<_> = subject.into_iter().collect();
-        expect!(output).to(be_equal_to(values));
+        expect!(output).to(be_equal_to(expected));
     }
 }
