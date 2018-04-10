@@ -31,13 +31,6 @@ mod iter;
 
 pub use dense::iter::{Iter, IntoIter};
 
-#[macro_export]
-macro_rules! dense_vec {
-    ($e:expr; $n:expr) => (DenseVector::from_iter(vec![$e; $n]));
-    ($($e:expr),*) => (DenseVector::from_iter(vec![$($e),*]));
-    ($($e:expr),+,) => (dense_vec!($($e),+));
-}
-
 /// A dense vector representation with efficient iteration.
 #[derive(Clone, PartialEq)]
 pub struct DenseVector<T> {
