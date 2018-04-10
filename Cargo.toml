@@ -16,8 +16,12 @@ readme = "README.md"
 repository = "https://github.com/deepthought/vectors"
 version = "0.1.1"
 
+[dependencies.num-traits]
+branch = "mul_add"
+git = "https://github.com/regexident/num-traits.git"
+
 [dependencies]
-num-traits = "0.2.2"
+# num-traits = "0.2.2"
 ordered_iter = "0.1.0"
 
 [dev-dependencies]
