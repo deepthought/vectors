@@ -8,16 +8,16 @@ use sparse::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
 impl<T> Dot for SparseVector<T>
-    where T: Clone + Zero + Num
+    where T: Copy + Zero + Num
 {
     type Output = T;
 
     fn dot(&self, rhs: &Self) -> Self::Output {
-        let iter = rhs.iter().map(|(k, v)| (k, v.clone())).ordered_map_iterator();
+        let iter = rhs.iter().ordered_map_iterator();
         self.iter()
             .inner_join_map(iter)
             .fold(T::zero(),
-                  |sum, (_, (lhs, rhs))| sum + (lhs.clone() * rhs.clone()))
+                  |sum, (_, (lhs, rhs))| sum + (lhs * rhs))
     }
 }
 

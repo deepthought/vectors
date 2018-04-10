@@ -5,7 +5,7 @@
 use sparse::*;
 
 impl<T, U> Div<U> for SparseVector<T>
-    where T: Clone + Zero + Div<T, Output = T>,
+    where T: Copy + Zero + Div<T, Output = T>,
           U: Into<T>
 {
     type Output = SparseVector<T>;
@@ -17,7 +17,7 @@ impl<T, U> Div<U> for SparseVector<T>
 }
 
 impl<'a, T, U> Div<U> for &'a SparseVector<T>
-    where T: Clone + Zero + Div<T, Output = T>,
+    where T: Copy + Zero + Div<T, Output = T>,
           U: Into<T>
 {
     type Output = SparseVector<T>;
@@ -29,13 +29,13 @@ impl<'a, T, U> Div<U> for &'a SparseVector<T>
 }
 
 impl<T, U> DivAssign<U> for SparseVector<T>
-    where T: Clone + Zero + Div<T, Output = T>,
+    where T: Copy + Zero + Div<T, Output = T>,
           U: Into<T>
 {
     fn div_assign(&mut self, rhs: U) {
         let into: T = rhs.into();
-        for lhs in &mut self.components {
-            lhs.1 = lhs.1.clone() / into.clone();
+        for (_, lhs) in &mut self.components {
+            *lhs = (*lhs) / into;
         }
     }
 }

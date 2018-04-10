@@ -5,7 +5,7 @@
 use dense::*;
 
 impl<T> FromIterator<T> for DenseVector<T>
-    where T: Clone
+    where T: Copy
 {
     #[inline]
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
@@ -74,7 +74,7 @@ impl<'a, T> Iter<'a, T> where T: 'a {
 }
 
 impl<'a, T> Iterator for Iter<'a, T>
-    where T: Clone
+    where T: Copy
 {
     type Item = (usize, T);
 
@@ -83,7 +83,7 @@ impl<'a, T> Iterator for Iter<'a, T>
         let index = self.index;
         if let Some(value) = self.inner.next() {
             self.index += 1;
-            Some((index, value.clone()))
+            Some((index, *value))
         } else {
             None
         }
@@ -96,7 +96,7 @@ impl<'a, T> Iterator for Iter<'a, T>
 }
 
 impl<'a, T> ExactSizeIterator for Iter<'a, T>
-    where T: Clone
+    where T: Copy
 {
     #[inline]
     fn len(&self) -> usize {

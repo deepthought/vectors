@@ -104,18 +104,18 @@ impl<'a, T> Iter<'a, T> {
 }
 
 impl<'a, T> Iterator for Iter<'a, T>
-    where T: Clone
+    where T: Copy
 {
     type Item = (usize, T);
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|i| i.clone())
+        self.inner.next().map(|i| *i)
     }
 }
 
 impl<'a, T> ExactSizeIterator for Iter<'a, T>
-    where T: Clone
+    where T: Copy
 {
     #[inline]
     fn len(&self) -> usize {
@@ -124,7 +124,7 @@ impl<'a, T> ExactSizeIterator for Iter<'a, T>
 }
 
 impl<'a, T> OrderedMapIterator for Iter<'a, T>
-    where T: Clone
+    where T: Copy
 {
     type Key = usize;
     type Val = T;

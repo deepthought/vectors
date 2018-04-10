@@ -8,7 +8,7 @@ use sparse::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
 impl<'b, T> MulAdd<T, &'b SparseVector<T>> for SparseVector<T>
-    where T: Clone + Zero + MulAdd<T, T, Output = T>,
+    where T: Copy + Zero + MulAdd<T, T, Output = T>,
 {
     type Output = SparseVector<T>;
 
@@ -19,7 +19,7 @@ impl<'b, T> MulAdd<T, &'b SparseVector<T>> for SparseVector<T>
 }
 
 impl<'a, 'b, T> MulAdd<T, &'b SparseVector<T>> for &'a SparseVector<T>
-    where T: Clone + Zero + MulAdd<T, T, Output = T>,
+    where T: Copy + Zero + MulAdd<T, T, Output = T>,
 {
     type Output = SparseVector<T>;
 
@@ -29,7 +29,7 @@ impl<'a, 'b, T> MulAdd<T, &'b SparseVector<T>> for &'a SparseVector<T>
 }
 
 impl<'b, T> MulAddAssign<T, &'b SparseVector<T>> for SparseVector<T>
-    where T: Clone + Zero + MulAdd<T, T, Output = T>,
+    where T: Copy + Zero + MulAdd<T, T, Output = T>,
 {
     fn mul_add_assign(&mut self, a: T, b: &'b SparseVector<T>) {
         self.components = {
@@ -37,9 +37,9 @@ impl<'b, T> MulAddAssign<T, &'b SparseVector<T>> for SparseVector<T>
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {
-                        (Some(l), Some(r)) => l.mul_add(a.clone(), r),
-                        (Some(l), None) => l.mul_add(a.clone(), T::zero()),
-                        (None, Some(r)) => T::zero().mul_add(a.clone(), r),
+                        (Some(l), Some(r)) => l.mul_add(a, r),
+                        (Some(l), None) => l.mul_add(a, T::zero()),
+                        (None, Some(r)) => T::zero().mul_add(a, r),
                         _ => unreachable!(),
                     };
                     if value.is_zero() {

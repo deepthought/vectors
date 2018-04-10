@@ -63,7 +63,7 @@ where
     + Mul<T, Output = Self>
     + Div<T, Output = Self>
     + MulAdd<T, &'a Self, Output = Self>,
-    T: Clone + NumAssign + MulAdd<Output = T>,
+    T: 'a + Copy + NumAssign + MulAdd<Output = T>,
 {}
 
 impl<'a, T> VectorAssignOps<'a, T> for SparseVector<T>
@@ -74,13 +74,13 @@ where
     + MulAssign<T>
     + DivAssign<T>
     + MulAddAssign<T, &'a Self>,
-    T: 'a + Clone + NumAssign + MulAddAssign,
+    T: 'a + Copy + NumAssign + MulAddAssign,
 {}
 
 impl<'a, T> Vector<'a, T> for SparseVector<T>
 where
     Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self> + Dot,
-    T: 'a + Clone + NumAssign + MulAdd<Output = T>,
+    T: 'a + Copy + NumAssign + MulAdd<Output = T>,
 {
     type Scalar = T;
 }

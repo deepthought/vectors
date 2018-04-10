@@ -8,8 +8,8 @@ use sparse::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
 impl<'b, T, U> Add<&'b SparseVector<U>> for SparseVector<T>
-    where T: Clone + Zero + Add<T, Output = T>,
-          U: Clone + Into<T>
+    where T: Copy + Zero + Add<T, Output = T>,
+          U: Copy + Into<T>
 {
     type Output = SparseVector<T>;
 
@@ -21,8 +21,8 @@ impl<'b, T, U> Add<&'b SparseVector<U>> for SparseVector<T>
 }
 
 impl<'a, 'b, T, U> Add<&'b SparseVector<U>> for &'a SparseVector<T>
-    where T: Clone + Zero + Add<T, Output = T>,
-          U: Clone + Into<T>
+    where T: Copy + Zero + Add<T, Output = T>,
+          U: Copy + Into<T>
 {
     type Output = SparseVector<T>;
 
@@ -33,8 +33,8 @@ impl<'a, 'b, T, U> Add<&'b SparseVector<U>> for &'a SparseVector<T>
 }
 
 impl<'b, T, U> AddAssign<&'b SparseVector<U>> for SparseVector<T>
-    where T: Clone + Zero + Add<T, Output = T>,
-          U: Clone + Into<T>
+    where T: Copy + Zero + Add<T, Output = T>,
+          U: Copy + Into<T>
 {
     fn add_assign(&mut self, rhs: &'b SparseVector<U>) {
         self.components = {

@@ -5,7 +5,7 @@
 use dense::*;
 
 impl<T> Dot for DenseVector<T>
-    where T: Clone + Zero + Num
+    where T: Copy + Zero + Num
 {
     type Output = T;
 
@@ -14,7 +14,7 @@ impl<T> Dot for DenseVector<T>
         self.components.iter()
             .zip(iter)
             .fold(T::zero(),
-                  |sum, (lhs, rhs)| sum + (lhs.clone() * rhs.clone()))
+                  |sum, (lhs, rhs)| sum + ((*lhs) * (*rhs)))
     }
 }
 

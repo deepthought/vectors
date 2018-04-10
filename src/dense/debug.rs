@@ -5,7 +5,7 @@
 use dense::*;
 
 impl<T> fmt::Debug for DenseVector<T>
-    where T: Clone + fmt::Debug
+    where T: Copy + fmt::Debug
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let _ = write!(f, "[");

@@ -5,14 +5,14 @@
 use sparse::*;
 
 impl<T> fmt::Debug for SparseVector<T>
-    where T: Clone + fmt::Debug
+    where T: Copy + fmt::Debug
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let _ = write!(f, "[");
         for (fmt_idx, (index, value)) in self.iter().enumerate() {
             try! {
-                if fmt_idx > 0 { write!(f, ", ({}, {:?})", index, value.clone()) }
-                else { write!(f, "({}, {:?})", index, value.clone()) }
+                if fmt_idx > 0 { write!(f, ", ({}, {:?})", index, value) }
+                else { write!(f, "({}, {:?})", index, value) }
             };
         }
         let _ = write!(f, "]");
