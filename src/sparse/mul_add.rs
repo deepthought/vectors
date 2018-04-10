@@ -32,7 +32,7 @@ impl<'b, T> MulAddAssign<T, &'b SparseVector<T>> for SparseVector<T>
     where T: Clone + Zero + MulAdd<T, T, Output = T>,
 {
     fn mul_add_assign(&mut self, a: T, b: &'b SparseVector<T>) {
-        self.0 = {
+        self.components = {
             let iter = b.iter().ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
@@ -45,11 +45,11 @@ impl<'b, T> MulAddAssign<T, &'b SparseVector<T>> for SparseVector<T>
                     if value.is_zero() {
                         None
                     } else {
-                        Some(Item((index, value)))
+                        Some((index, value))
                     }
                 })
                 .collect()
-        }
+        };
     }
 }
 

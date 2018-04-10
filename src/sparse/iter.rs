@@ -9,22 +9,24 @@ use ordered_iter::OrderedMapIterator;
 impl<T> FromIterator<(usize, T)> for SparseVector<T> {
     #[inline]
     fn from_iter<I: IntoIterator<Item = (usize, T)>>(iter: I) -> Self {
-        let items: Vec<_> = iter.into_iter().map(Item).collect();
+        let items: Vec<_> = iter.into_iter().collect();
         SparseVector::from(items)
     }
 }
 
 impl<T> IntoIterator for SparseVector<T> {
-    type Item = (usize, T);
+    type Item = <Self::IntoIter as IntoIterator>::Item;
     type IntoIter = IntoIter<T>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        IntoIter(self.0.into_iter())
+        IntoIter::new(self.components.into_iter())
     }
 }
 
-pub struct OrderedMapIteratorWrapper<I>(I);
+pub struct OrderedMapIteratorWrapper<I> {
+    inner: I
+}
 
 impl<I> Iterator for OrderedMapIteratorWrapper<I>
     where I: Iterator
@@ -33,12 +35,12 @@ impl<I> Iterator for OrderedMapIteratorWrapper<I>
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next()
+        self.inner.next()
     }
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        self.0.size_hint()
+        self.inner.size_hint()
     }
 }
 
@@ -52,18 +54,20 @@ impl<I, K, V> OrderedMapIterator for OrderedMapIteratorWrapper<I>
 pub trait OrderedMapIterable: Sized {
     #[inline]
     fn ordered_map_iterator(self) -> OrderedMapIteratorWrapper<Self> {
-        OrderedMapIteratorWrapper(self)
+        OrderedMapIteratorWrapper { inner: self }
     }
 }
 
 impl<I, K, V> OrderedMapIterable for I where I: Iterator<Item = (K, V)> {}
 
-pub struct IntoIter<T>(<Vec<Item<T>> as IntoIterator>::IntoIter);
+pub struct IntoIter<T> {
+    inner: <Vec<(usize, T)> as IntoIterator>::IntoIter,
+}
 
 impl<T> IntoIter<T> {
     #[inline]
-    pub fn new(iter: <Vec<Item<T>> as IntoIterator>::IntoIter) -> Self {
-        IntoIter(iter)
+    pub fn new(iter: <Vec<(usize, T)> as IntoIterator>::IntoIter) -> Self {
+        IntoIter { inner: iter }
     }
 }
 
@@ -72,14 +76,14 @@ impl<T> Iterator for IntoIter<T> {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|i| i.0)
+        self.inner.next()
     }
 }
 
 impl<T> ExactSizeIterator for IntoIter<T> {
     #[inline]
     fn len(&self) -> usize {
-        self.0.len()
+        self.inner.len()
     }
 }
 
@@ -88,12 +92,14 @@ impl<T> OrderedMapIterator for IntoIter<T> {
     type Val = T;
 }
 
-pub struct Iter<'a, T>(<&'a [Item<T>] as IntoIterator>::IntoIter) where T: 'a;
+pub struct Iter<'a, T> where T: 'a {
+    inner: <&'a [(usize, T)] as IntoIterator>::IntoIter,
+}
 
 impl<'a, T> Iter<'a, T> {
     #[inline]
-    pub fn new(iter: <&'a [Item<T>] as IntoIterator>::IntoIter) -> Self {
-        Iter(iter)
+    pub fn new(iter: <&'a [(usize, T)] as IntoIterator>::IntoIter) -> Self {
+        Iter { inner: iter }
     }
 }
 
@@ -104,7 +110,7 @@ impl<'a, T> Iterator for Iter<'a, T>
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|i| i.0.clone())
+        self.inner.next().map(|i| i.clone())
     }
 }
 
@@ -113,7 +119,7 @@ impl<'a, T> ExactSizeIterator for Iter<'a, T>
 {
     #[inline]
     fn len(&self) -> usize {
-        self.0.len()
+        self.inner.len()
     }
 }
 
@@ -132,18 +138,11 @@ mod test {
 
     use expectest::prelude::*;
 
-    macro_rules! itemize {
-        ($vec:expr) => {
-            $vec.into_iter().map(|(i, v)| Item((i, v))).collect()
-        };
-    }
-
     #[test]
     fn from_iter() {
         let values = vec![(0, 0.1), (1, 0.2), (2, 0.3), (4, 0.4), (5, 0.5)];
-        let items: Vec<_> = itemize!(values.clone());
         let subject = SparseVector::from_iter(values.clone());
-        expect!(subject.0).to(be_equal_to(items));
+        expect!(subject.components).to(be_equal_to(values));
     }
 
     #[test]

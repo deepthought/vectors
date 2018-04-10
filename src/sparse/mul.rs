@@ -34,8 +34,8 @@ impl<T, U> MulAssign<U> for SparseVector<T>
 {
     fn mul_assign(&mut self, rhs: U) {
         let into: T = rhs.into();
-        for lhs in &mut self.0 {
-            (lhs.0).1 = (lhs.0).1.clone() * into.clone();
+        for lhs in &mut self.components {
+            lhs.1 = lhs.1.clone() * into.clone();
         }
     }
 }

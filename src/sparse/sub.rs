@@ -37,7 +37,7 @@ impl<'b, T, U> SubAssign<&'b SparseVector<U>> for SparseVector<T>
           U: Clone + Into<T>
 {
     fn sub_assign(&mut self, rhs: &'b SparseVector<U>) {
-        self.0 = {
+        self.components = {
             let iter = rhs.iter().ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
@@ -50,7 +50,7 @@ impl<'b, T, U> SubAssign<&'b SparseVector<U>> for SparseVector<T>
                     if value.is_zero() {
                         None
                     } else {
-                        Some(Item((index, value)))
+                        Some((index, value))
                     }
                 })
                 .collect()

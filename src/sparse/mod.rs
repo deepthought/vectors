@@ -30,33 +30,22 @@ mod iter;
 
 pub use sparse::iter::{Iter, IntoIter};
 
-#[derive(Clone, PartialEq, Debug)]
-pub struct Item<T>(pub (usize, T));
-
 /// A sparse vector representation with efficient iteration.
 #[derive(Clone, PartialEq)]
-pub struct SparseVector<T>(Vec<Item<T>>);
+pub struct SparseVector<T> {
+    components: Vec<(usize, T)>,
+}
 
 impl<T> SparseVector<T> {
     #[inline]
-    pub fn new(items: Vec<Item<T>>) -> Self {
-        SparseVector(items)
-    }
-
-    #[inline]
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    #[inline]
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-
-    #[inline]
     pub fn iter<'a>(&'a self) -> Iter<'a, T> {
-        Iter::new(self.0.iter())
+        Iter::new(self.components.iter())
     }
+
+    // #[cfg(feature = "drain_filter")]
+    // fn shrink_to_fit(&mut self) {
+    //     self.components.drain_filter(|(i, v)| v.is_zero()).drain();
+    // }
 }
 
 impl<T> Default for SparseVector<T> {
@@ -66,10 +55,10 @@ impl<T> Default for SparseVector<T> {
     }
 }
 
-impl<T> From<Vec<Item<T>>> for SparseVector<T> {
+impl<T> From<Vec<(usize, T)>> for SparseVector<T> {
     #[inline]
-    fn from(items: Vec<Item<T>>) -> Self {
-        SparseVector(items)
+    fn from(items: Vec<(usize, T)>) -> Self {
+        SparseVector { components: items }
     }
 }
 
@@ -107,28 +96,21 @@ where
 mod test {
     use super::*;
 
-    use std::iter::{IntoIterator, FromIterator};
+    use std::iter::FromIterator;
 
     use expectest::prelude::*;
-
-    macro_rules! itemize {
-        ($vec:expr) => {
-            $vec.into_iter().map(|(i, v)| Item((i, v))).collect()
-        };
-    }
 
     #[test]
     fn sparse_vec() {
         let values = vec![(0, 5.0)];
-        let items: Vec<_> = itemize!(values.clone());
         let subject = sparse_vec![(0, 5.0)];
-        expect!(subject.0).to(be_equal_to(items));
+        expect!(subject.components).to(be_equal_to(values));
     }
 
     #[test]
     fn from() {
-        let items: Vec<_> = itemize!(vec![(0, 5.0)]);
-        let subject = SparseVector::from(items.clone());
-        expect!(subject.0).to(be_equal_to(items));
+        let values: Vec<_> = vec![(0, 5.0)];
+        let subject = SparseVector::from(values.clone());
+        expect!(subject.components).to(be_equal_to(values));
     }
 }
