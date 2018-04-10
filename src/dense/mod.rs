@@ -4,7 +4,7 @@
 
 // use std::cmp::max;
 use std::fmt;
-use std::iter::{IntoIterator, FromIterator};
+use std::iter::FromIterator;
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
@@ -38,16 +38,13 @@ macro_rules! dense_vec {
     ($($e:expr),+,) => (dense_vec!($($e),+));
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
-pub struct Item<T>(pub T);
-
 /// A dense vector representation with efficient iteration.
 #[derive(Clone, PartialEq)]
-pub struct DenseVector<T>(Vec<Item<T>>);
+pub struct DenseVector<T>(Vec<T>);
 
 impl<T> DenseVector<T> {
     #[inline]
-    pub fn new(items: Vec<Item<T>>) -> Self {
+    pub fn new(items: Vec<T>) -> Self {
         DenseVector(items)
     }
 
@@ -74,9 +71,9 @@ impl<T> Default for DenseVector<T> {
     }
 }
 
-impl<T> From<Vec<Item<T>>> for DenseVector<T> {
+impl<T> From<Vec<T>> for DenseVector<T> {
     #[inline]
-    fn from(items: Vec<Item<T>>) -> Self {
+    fn from(items: Vec<T>) -> Self {
         DenseVector(items)
     }
 }
@@ -104,29 +101,22 @@ where
 mod test {
     use super::*;
 
-    use std::iter::{IntoIterator, FromIterator};
+    use std::iter::FromIterator;
 
     use expectest::prelude::*;
-
-    macro_rules! itemize {
-        ($vec:expr) => {
-            $vec.into_iter().map(|v| Item(v)).collect()
-        };
-    }
 
     #[test]
     fn dense_vec() {
         let (value, count) = (0.0, 5);
         let values = vec![value; count];
-        let items: Vec<_> = itemize!(values.clone());
         let subject = dense_vec![value; count];
-        expect!(subject.0).to(be_equal_to(items));
+        expect!(subject.0).to(be_equal_to(values));
     }
 
     #[test]
     fn from() {
-        let items: Vec<_> = itemize!(vec![0.0; 5]);
-        let subject = DenseVector::from(items.clone());
-        expect!(subject.0).to(be_equal_to(items));
+        let values: Vec<_> = vec![0.0; 5];
+        let subject = DenseVector::from(values.clone());
+        expect!(subject.0).to(be_equal_to(values));
     }
 }

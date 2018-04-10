@@ -9,7 +9,7 @@ impl<T> FromIterator<T> for DenseVector<T>
 {
     #[inline]
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
-        let items: Vec<_> = iter.into_iter().map(Item).collect();
+        let items: Vec<_> = iter.into_iter().collect();
         DenseVector::from(items)
     }
 }
@@ -24,10 +24,10 @@ impl<T> IntoIterator for DenseVector<T> {
     }
 }
 
-pub struct IntoIter<T>(<Vec<Item<T>> as IntoIterator>::IntoIter);
+pub struct IntoIter<T>(<Vec<T> as IntoIterator>::IntoIter);
 
 impl<T> IntoIter<T> {
-    pub fn new(iter: <Vec<Item<T>> as IntoIterator>::IntoIter) -> Self {
+    pub fn new(iter: <Vec<T> as IntoIterator>::IntoIter) -> Self {
         IntoIter(iter)
     }
 }
@@ -37,7 +37,7 @@ impl<T> Iterator for IntoIter<T> {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|i| i.0)
+        self.0.next()
     }
 
     #[inline]
@@ -53,10 +53,10 @@ impl<T> ExactSizeIterator for IntoIter<T> {
     }
 }
 
-pub struct Iter<'a, T>(<&'a [Item<T>] as IntoIterator>::IntoIter) where T: 'a;
+pub struct Iter<'a, T>(<&'a [T] as IntoIterator>::IntoIter) where T: 'a;
 
 impl<'a, T> Iter<'a, T> where T: 'a {
-    pub fn new(iter: <&'a [Item<T>] as IntoIterator>::IntoIter) -> Self {
+    pub fn new(iter: <&'a [T] as IntoIterator>::IntoIter) -> Self {
         Iter(iter)
     }
 }
@@ -68,7 +68,7 @@ impl<'a, T> Iterator for Iter<'a, T>
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|i| i.0.clone())
+        self.0.next().map(|i| i.clone())
     }
 
     #[inline]
@@ -92,18 +92,11 @@ mod test {
 
     use expectest::prelude::*;
 
-    macro_rules! itemize {
-        ($vec:expr) => {
-            $vec.into_iter().map(|v| Item(v)).collect()
-        };
-    }
-
     #[test]
     fn from_iter() {
         let values = vec![0.1, 0.2, 0.3, 0.4, 0.5];
-        let items: Vec<_> = itemize!(values.clone());
         let subject = DenseVector::from_iter(values.clone());
-        expect!(subject.0).to(be_equal_to(items));
+        expect!(subject.0).to(be_equal_to(values));
     }
 
     #[test]

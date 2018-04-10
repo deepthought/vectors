@@ -37,7 +37,7 @@ impl<'b, T, U> MulAddAssign<T, &'b DenseVector<U>> for DenseVector<T>
         assert_eq!(self.len(), b.len());
         let iter = b.iter();
         for (l, r) in self.0.iter_mut().zip(iter) {
-            l.0.mul_add_assign(a.clone(), r.clone());
+            l.mul_add_assign(a.clone(), r.clone());
         }
     }
 }

@@ -37,7 +37,7 @@ impl<'b, T, U> AddAssign<&'b DenseVector<U>> for DenseVector<T>
         assert_eq!(self.len(), rhs.len());
         let iter = rhs.iter();
         for (lhs, rhs) in self.0.iter_mut().zip(iter) {
-            lhs.0 += rhs.into();
+            *lhs += rhs.into();
         }
     }
 }
