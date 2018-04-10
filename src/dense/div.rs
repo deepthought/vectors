@@ -5,7 +5,7 @@
 use dense::*;
 
 impl<T, U> Div<U> for DenseVector<T>
-    where T: Clone + Default + DivAssign<T>,
+    where T: Clone + DivAssign<T>,
           U: Into<T>
 {
     type Output = DenseVector<T>;
@@ -18,7 +18,7 @@ impl<T, U> Div<U> for DenseVector<T>
 }
 
 impl<'a, T, U> Div<U> for &'a DenseVector<T>
-    where T: Clone + Default + DivAssign<T>,
+    where T: Clone + DivAssign<T>,
           U: Into<T>
 {
     type Output = DenseVector<T>;
@@ -30,7 +30,7 @@ impl<'a, T, U> Div<U> for &'a DenseVector<T>
 }
 
 impl<T, U> DivAssign<U> for DenseVector<T>
-    where T: Clone + Default + DivAssign<T>,
+    where T: Clone + DivAssign<T>,
           U: Into<T>
 {
     #[inline]

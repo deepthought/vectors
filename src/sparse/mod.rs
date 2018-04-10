@@ -48,13 +48,6 @@ impl<T> SparseVector<T> {
     // }
 }
 
-impl<T> Default for SparseVector<T> {
-    #[inline]
-    fn default() -> Self {
-        Self::from(vec![])
-    }
-}
-
 impl<T> From<Vec<(usize, T)>> for SparseVector<T> {
     #[inline]
     fn from(items: Vec<(usize, T)>) -> Self {
@@ -70,7 +63,7 @@ where
     + Mul<T, Output = Self>
     + Div<T, Output = Self>
     + MulAdd<T, &'a Self, Output = Self>,
-    T: Clone + Default + NumAssign + MulAdd<Output = T>,
+    T: Clone + NumAssign + MulAdd<Output = T>,
 {}
 
 impl<'a, T> VectorAssignOps<'a, T> for SparseVector<T>
@@ -81,13 +74,13 @@ where
     + MulAssign<T>
     + DivAssign<T>
     + MulAddAssign<T, &'a Self>,
-    T: 'a + Clone + Default + NumAssign + MulAddAssign,
+    T: 'a + Clone + NumAssign + MulAddAssign,
 {}
 
 impl<'a, T> Vector<'a, T> for SparseVector<T>
 where
     Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self> + Dot,
-    T: 'a + Clone + Default + NumAssign + MulAdd<Output = T>,
+    T: 'a + Clone + NumAssign + MulAdd<Output = T>,
 {
     type Scalar = T;
 }

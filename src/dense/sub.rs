@@ -5,7 +5,7 @@
 use dense::*;
 
 impl<'b, T, U> Sub<&'b DenseVector<U>> for DenseVector<T>
-    where T: Clone + Default + SubAssign<T>,
+    where T: Clone + SubAssign<T>,
           U: Clone + Into<T>
 {
     type Output = DenseVector<T>;
@@ -18,7 +18,7 @@ impl<'b, T, U> Sub<&'b DenseVector<U>> for DenseVector<T>
 }
 
 impl<'a, 'b, T, U> Sub<&'b DenseVector<U>> for &'a DenseVector<T>
-    where T: Clone + Default + SubAssign<T>,
+    where T: Clone + SubAssign<T>,
           U: Clone + Into<T>
 {
     type Output = DenseVector<T>;
@@ -30,7 +30,7 @@ impl<'a, 'b, T, U> Sub<&'b DenseVector<U>> for &'a DenseVector<T>
 }
 
 impl<'b, T, U> SubAssign<&'b DenseVector<U>> for DenseVector<T>
-    where T: Clone + Default + SubAssign<T>,
+    where T: Clone + SubAssign<T>,
           U: Clone + Into<T>
 {
     fn sub_assign(&mut self, rhs: &'b DenseVector<U>) {

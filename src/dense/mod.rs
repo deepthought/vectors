@@ -54,13 +54,6 @@ impl<T> DenseVector<T> {
     }
 }
 
-impl<T> Default for DenseVector<T> {
-    #[inline]
-    fn default() -> Self {
-        Self::from(vec![])
-    }
-}
-
 impl<T> From<Vec<T>> for DenseVector<T> {
     #[inline]
     fn from(items: Vec<T>) -> Self {
@@ -71,18 +64,18 @@ impl<T> From<Vec<T>> for DenseVector<T> {
 impl<'a, T> VectorOps<'a, T> for DenseVector<T>
 where
     Self: 'a + VectorAssignOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
-    T: Clone + Default + NumAssign + MulAdd<Output = T>,
+    T: Clone + NumAssign + MulAdd<Output = T>,
 {}
 
 impl<'a, T> VectorAssignOps<'a, T> for DenseVector<T>
 where
-    T: 'a + Clone + Default + NumAssign + MulAddAssign,
+    T: 'a + Clone + NumAssign + MulAddAssign,
 {}
 
 impl<'a, T> Vector<'a, T> for DenseVector<T>
 where
     Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self> + Dot,
-    T: 'a + Clone + Default + NumAssign + MulAdd<Output = T>,
+    T: 'a + Clone + NumAssign + MulAdd<Output = T>,
 {
     type Scalar = T;
 }

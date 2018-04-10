@@ -5,7 +5,7 @@
 use dense::*;
 
 impl<'b, T, U> MulAdd<T, &'b DenseVector<U>> for DenseVector<T>
-    where T: Clone + Default + MulAddAssign<T, U>,
+    where T: Clone + MulAddAssign<T, U>,
           U: Clone
 {
     type Output = DenseVector<T>;
@@ -18,7 +18,7 @@ impl<'b, T, U> MulAdd<T, &'b DenseVector<U>> for DenseVector<T>
 }
 
 impl<'a, 'b, T, U> MulAdd<T, &'b DenseVector<U>> for &'a DenseVector<T>
-    where T: Clone + Default + MulAddAssign<T, U>,
+    where T: Clone + MulAddAssign<T, U>,
           U: Clone
 {
     type Output = DenseVector<T>;
@@ -30,7 +30,7 @@ impl<'a, 'b, T, U> MulAdd<T, &'b DenseVector<U>> for &'a DenseVector<T>
 }
 
 impl<'b, T, U> MulAddAssign<T, &'b DenseVector<U>> for DenseVector<T>
-    where T: Clone + Default + MulAddAssign<T, U>,
+    where T: Clone + MulAddAssign<T, U>,
           U: Clone
 {
     fn mul_add_assign(&mut self, a: T, b: &'b DenseVector<U>) {
