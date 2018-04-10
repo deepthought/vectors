@@ -40,17 +40,14 @@ macro_rules! dense_vec {
 
 /// A dense vector representation with efficient iteration.
 #[derive(Clone, PartialEq)]
-pub struct DenseVector<T>(Vec<T>);
+pub struct DenseVector<T> {
+    components: Vec<T>,
+}
 
 impl<T> DenseVector<T> {
     #[inline]
-    pub fn new(items: Vec<T>) -> Self {
-        DenseVector(items)
-    }
-
-    #[inline]
     pub fn len(&self) -> usize {
-        self.0.len()
+        self.components.len()
     }
 
     #[inline]
@@ -60,7 +57,7 @@ impl<T> DenseVector<T> {
 
     #[inline]
     pub fn iter<'a>(&'a self) -> Iter<'a, T> {
-        Iter::new(self.0.iter())
+        Iter::new(self.components.iter())
     }
 }
 
@@ -74,7 +71,7 @@ impl<T> Default for DenseVector<T> {
 impl<T> From<Vec<T>> for DenseVector<T> {
     #[inline]
     fn from(items: Vec<T>) -> Self {
-        DenseVector(items)
+        DenseVector { components: items }
     }
 }
 
@@ -110,13 +107,13 @@ mod test {
         let (value, count) = (0.0, 5);
         let values = vec![value; count];
         let subject = dense_vec![value; count];
-        expect!(subject.0).to(be_equal_to(values));
+        expect!(subject.components).to(be_equal_to(values));
     }
 
     #[test]
     fn from() {
         let values: Vec<_> = vec![0.0; 5];
         let subject = DenseVector::from(values.clone());
-        expect!(subject.0).to(be_equal_to(values));
+        expect!(subject.components).to(be_equal_to(values));
     }
 }

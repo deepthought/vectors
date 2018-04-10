@@ -36,7 +36,7 @@ impl<'b, T, U> SubAssign<&'b DenseVector<U>> for DenseVector<T>
     fn sub_assign(&mut self, rhs: &'b DenseVector<U>) {
         assert_eq!(self.len(), rhs.len());
         let iter = rhs.iter();
-        for (lhs, rhs) in self.0.iter_mut().zip(iter) {
+        for (lhs, rhs) in self.components.iter_mut().zip(iter) {
             *lhs -= rhs.into();
         }
     }

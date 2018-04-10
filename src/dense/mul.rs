@@ -35,7 +35,7 @@ impl<T, U> MulAssign<U> for DenseVector<T>
 {
     fn mul_assign(&mut self, rhs: U) {
         let into: T = rhs.into();
-        for lhs in &mut self.0 {
+        for lhs in &mut self.components {
             *lhs *= into.clone();
         }
     }

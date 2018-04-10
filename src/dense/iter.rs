@@ -15,20 +15,22 @@ impl<T> FromIterator<T> for DenseVector<T>
 }
 
 impl<T> IntoIterator for DenseVector<T> {
-    type Item = T;
+    type Item = <Self::IntoIter as IntoIterator>::Item;
     type IntoIter = IntoIter<T>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        IntoIter(self.0.into_iter())
+        IntoIter::new(self.components.into_iter())
     }
 }
 
-pub struct IntoIter<T>(<Vec<T> as IntoIterator>::IntoIter);
+pub struct IntoIter<T> {
+    inner: <Vec<T> as IntoIterator>::IntoIter,
+}
 
 impl<T> IntoIter<T> {
     pub fn new(iter: <Vec<T> as IntoIterator>::IntoIter) -> Self {
-        IntoIter(iter)
+        IntoIter { inner: iter }
     }
 }
 
@@ -37,27 +39,29 @@ impl<T> Iterator for IntoIter<T> {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next()
+        self.inner.next()
     }
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        self.0.size_hint()
+        self.inner.size_hint()
     }
 }
 
 impl<T> ExactSizeIterator for IntoIter<T> {
     #[inline]
     fn len(&self) -> usize {
-        self.0.len()
+        self.inner.len()
     }
 }
 
-pub struct Iter<'a, T>(<&'a [T] as IntoIterator>::IntoIter) where T: 'a;
+pub struct Iter<'a, T> where T: 'a {
+    inner: <&'a [T] as IntoIterator>::IntoIter,
+}
 
 impl<'a, T> Iter<'a, T> where T: 'a {
     pub fn new(iter: <&'a [T] as IntoIterator>::IntoIter) -> Self {
-        Iter(iter)
+        Iter { inner: iter }
     }
 }
 
@@ -68,12 +72,12 @@ impl<'a, T> Iterator for Iter<'a, T>
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|i| i.clone())
+        self.inner.next().map(|i| i.clone())
     }
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        self.0.size_hint()
+        self.inner.size_hint()
     }
 }
 
@@ -82,7 +86,7 @@ impl<'a, T> ExactSizeIterator for Iter<'a, T>
 {
     #[inline]
     fn len(&self) -> usize {
-        self.0.len()
+        self.inner.len()
     }
 }
 
@@ -96,7 +100,7 @@ mod test {
     fn from_iter() {
         let values = vec![0.1, 0.2, 0.3, 0.4, 0.5];
         let subject = DenseVector::from_iter(values.clone());
-        expect!(subject.0).to(be_equal_to(values));
+        expect!(subject.components).to(be_equal_to(values));
     }
 
     #[test]

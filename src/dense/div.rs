@@ -36,7 +36,7 @@ impl<T, U> DivAssign<U> for DenseVector<T>
     #[inline]
     fn div_assign(&mut self, rhs: U) {
         let into: T = rhs.into();
-        for lhs in &mut self.0 {
+        for lhs in &mut self.components {
             *lhs /= into.clone();
         }
     }
