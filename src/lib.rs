@@ -31,6 +31,7 @@ use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use num_traits::{MulAdd, MulAddAssign};
 
+/// The trait for vector types implementing basic numeric operations.
 pub trait VectorOps<'a, Scalar>: 'a + Sized
     + Add<&'a Self, Output = Self>
     + Sub<&'a Self, Output = Self>
@@ -39,6 +40,7 @@ pub trait VectorOps<'a, Scalar>: 'a + Sized
     + MulAdd<Scalar, &'a Self, Output = Self>
 {}
 
+/// The trait for vector types implementing numeric assignment operators (like `+=`).
 pub trait VectorAssignOps<'a, Scalar>: 'a + Sized
     + AddAssign<&'a Self>
     + SubAssign<&'a Self>
@@ -47,12 +49,15 @@ pub trait VectorAssignOps<'a, Scalar>: 'a + Sized
     + MulAddAssign<Scalar, &'a Self>
 {}
 
+/// The base trait for vector types, covering comparisons,
+/// basic numeric operations, and the dot product.
 pub trait Vector<'a, Scalar>: PartialEq + VectorOps<'a, Scalar> {
     type Scalar;
 
     fn dot(&self, rhs: &Self) -> Self::Scalar;
 }
 
+/// The trait for `Vector` types which also implement assignment operators.
 pub trait VectorAssign<'a, Scalar>: Vector<'a, Scalar> + VectorAssignOps<'a, Scalar> {}
 
 impl<'a, T, S> VectorAssign<'a, S> for T
