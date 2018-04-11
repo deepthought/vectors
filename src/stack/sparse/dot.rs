@@ -31,8 +31,8 @@ mod test {
 
     #[test]
     fn dot() {
-        let subject = sparse_vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)];
-        let other = sparse_vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)];
+        let subject = SparseVector::from([(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let other = SparseVector::from([(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)]);
         let dot = subject.dot(&other);
         expect!(dot).to(be_close_to(1.85));
     }

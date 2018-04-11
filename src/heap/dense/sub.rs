@@ -50,27 +50,27 @@ mod test {
 
     #[test]
     fn sub() {
-        let subject = dense_vec![2.0, 1.5, 1.0, 1.0, 1.0];
-        let other = dense_vec![2.0, 1.0, 0.0, -1.0, -2.0];
-        let expected = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
+        let subject = DenseVector::from(vec![2.0, 1.5, 1.0, 1.0, 1.0]);
+        let other = DenseVector::from(vec![2.0, 1.0, 0.0, -1.0, -2.0]);
+        let expected = DenseVector::from(vec![0.0, 0.5, 1.0, 2.0, 3.0]);
         let result = subject - &other;
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
     fn sub_from_ref() {
-        let subject = dense_vec![2.0, 1.5, 1.0, 1.0, 1.0];
-        let other = dense_vec![2.0, 1.0, 0.0, -1.0, -2.0];
-        let expected = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
+        let subject = DenseVector::from(vec![2.0, 1.5, 1.0, 1.0, 1.0]);
+        let other = DenseVector::from(vec![2.0, 1.0, 0.0, -1.0, -2.0]);
+        let expected = DenseVector::from(vec![0.0, 0.5, 1.0, 2.0, 3.0]);
         let result = (&subject) - &other;
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
     fn sub_assign() {
-        let subject = dense_vec![2.0, 1.5, 1.0, 1.0, 1.0];
-        let other = dense_vec![2.0, 1.0, 0.0, -1.0, -2.0];
-        let expected = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
+        let subject = DenseVector::from(vec![2.0, 1.5, 1.0, 1.0, 1.0]);
+        let other = DenseVector::from(vec![2.0, 1.0, 0.0, -1.0, -2.0]);
+        let expected = DenseVector::from(vec![0.0, 0.5, 1.0, 2.0, 3.0]);
         let mut result = subject;
         result -= &other;
         expect!(result).to(be_equal_to(expected));

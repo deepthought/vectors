@@ -12,10 +12,8 @@ extern crate num_traits;
 extern crate ordered_iter;
 extern crate arrayvec;
 
-#[macro_use]
 pub mod stack;
 
-#[macro_use]
 pub mod heap;
 
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};

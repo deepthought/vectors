@@ -49,24 +49,24 @@ mod test {
 
     #[test]
     fn div() {
-        let subject = dense_vec![0.0, 1.0, 2.0, 4.0, 6.0];
-        let other = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
+        let subject = DenseVector::from(vec![0.0, 1.0, 2.0, 4.0, 6.0]);
+        let other = DenseVector::from(vec![0.0, 0.5, 1.0, 2.0, 3.0]);
         let result = subject / 2.0;
         expect!(result).to(be_equal_to(other));
     }
 
     #[test]
     fn div_from_ref() {
-        let subject = dense_vec![0.0, 1.0, 2.0, 4.0, 6.0];
-        let other = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
+        let subject = DenseVector::from(vec![0.0, 1.0, 2.0, 4.0, 6.0]);
+        let other = DenseVector::from(vec![0.0, 0.5, 1.0, 2.0, 3.0]);
         let result = (&subject) / 2.0;
         expect!(result).to(be_equal_to(other));
     }
 
     #[test]
     fn div_assign() {
-        let subject = dense_vec![0.0, 1.0, 2.0, 4.0, 6.0];
-        let other = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
+        let subject = DenseVector::from(vec![0.0, 1.0, 2.0, 4.0, 6.0]);
+        let other = DenseVector::from(vec![0.0, 0.5, 1.0, 2.0, 3.0]);
         let mut result = subject;
         result /= 2.0;
         expect!(result).to(be_equal_to(other));

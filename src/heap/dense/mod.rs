@@ -11,13 +11,6 @@ use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
 
 use {Dot, Vector, VectorOps, VectorAssignOps};
 
-#[macro_export]
-macro_rules! dense_vec {
-    ($e:expr; $n:expr) => (DenseVector::from(vec![$e; $n]));
-    ($($e:expr),*) => (DenseVector::from(vec![$($e),*]));
-    ($($e:expr),+,) => (DenseVector::from(vec![$($e),+]));
-}
-
 mod add;
 mod sub;
 mod mul;
@@ -90,7 +83,7 @@ mod test {
     fn dense_vec() {
         let (value, count) = (0.0, 5);
         let values = vec![value; count];
-        let subject = dense_vec![value; count];
+        let subject = DenseVector::from(vec![value; count]);
         expect!(subject.components).to(be_equal_to(values));
     }
 

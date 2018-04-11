@@ -29,7 +29,7 @@ mod test {
 
     #[test]
     fn debug() {
-        let vector = dense_vec![0.0, 0.25, 0.5, 0.75, 1.0];
+        let vector = DenseVector::from(vec![0.0, 0.25, 0.5, 0.75, 1.0]);
         let subject = format!("{:?}", vector);
         let expected = "[0.0, 0.25, 0.5, 0.75, 1.0]";
         expect!(subject).to(be_equal_to(expected));

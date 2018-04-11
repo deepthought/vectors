@@ -50,24 +50,24 @@ mod test {
 
     #[test]
     fn mul() {
-        let subject = sparse_vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)];
-        let expected = sparse_vec![(0, 0.4), (1, 1.0), (2, 2.0), (4, 4.0), (5, 8.0)];
+        let subject = SparseVector::from([(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let expected = SparseVector::from([(0, 0.4), (1, 1.0), (2, 2.0), (4, 4.0), (5, 8.0)]);
         let result = subject * 2.0;
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
     fn mul_from_ref() {
-        let subject = sparse_vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)];
-        let expected = sparse_vec![(0, 0.4), (1, 1.0), (2, 2.0), (4, 4.0), (5, 8.0)];
+        let subject = SparseVector::from([(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let expected = SparseVector::from([(0, 0.4), (1, 1.0), (2, 2.0), (4, 4.0), (5, 8.0)]);
         let result = (&subject) * 2.0;
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
     fn mul_assign() {
-        let subject = sparse_vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)];
-        let expected = sparse_vec![(0, 0.4), (1, 1.0), (2, 2.0), (4, 4.0), (5, 8.0)];
+        let subject = SparseVector::from([(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let expected = SparseVector::from([(0, 0.4), (1, 1.0), (2, 2.0), (4, 4.0), (5, 8.0)]);
 
         let mut result = subject;
         result *= 2.0;

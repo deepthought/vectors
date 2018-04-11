@@ -11,12 +11,6 @@ use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
 
 use {Dot, Vector, VectorOps, VectorAssignOps};
 
-#[macro_export]
-macro_rules! sparse_vec {
-    ($(($i:expr, $v:expr)),*) => (SparseVector::from(vec![$(($i, $v)),*]));
-    ($(($i:expr, $v:expr)),+,) => (SparseVector::from(vec![$(($i, $v)),+]));
-}
-
 mod add;
 mod sub;
 mod mul;
@@ -94,7 +88,7 @@ mod test {
     #[test]
     fn sparse_vec() {
         let values = vec![(0, 5.0)];
-        let subject = sparse_vec![(0, 5.0)];
+        let subject = SparseVector::from(vec![(0, 5.0)]);
         expect!(subject.components).to(be_equal_to(values));
     }
 

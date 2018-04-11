@@ -28,8 +28,8 @@ mod test {
 
     #[test]
     fn dot() {
-        let subject = dense_vec![0.0, 0.5, 1.0, 2.0, 4.0];
-        let other = dense_vec![0.1, 0.2, 0.3, 0.4, 0.0];
+        let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 4.0]);
+        let other = DenseVector::from([0.1, 0.2, 0.3, 0.4, 0.0]);
         let dot = subject.dot(&other);
         expect!(dot).to(be_close_to(1.2));
     }

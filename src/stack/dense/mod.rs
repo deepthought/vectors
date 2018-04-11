@@ -11,13 +11,6 @@ use arrayvec::{Array, ArrayVec};
 
 use {Dot, Vector, VectorOps, VectorAssignOps};
 
-#[macro_export]
-macro_rules! dense_vec {
-    ($e:expr; $n:expr) => (DenseVector::from([$e; $n]));
-    ($($e:expr),*) => (DenseVector::from([$($e),*]));
-    ($($e:expr),+,) => (DenseVector::from([$($e),+]));
-}
-
 mod add;
 mod sub;
 mod mul;
@@ -134,7 +127,7 @@ mod test {
     #[test]
     fn dense_vec() {
         const VALUES: [f32; 5] = [0.0, 1.0, 0.5, 0.25, 0.125];
-        let subject = dense_vec![0.0, 1.0, 0.5, 0.25, 0.125];
+        let subject = DenseVector::from([0.0, 1.0, 0.5, 0.25, 0.125]);
         let expected = ArrayVec::from(VALUES);
         expect!(subject.components).to(be_equal_to(expected));
     }

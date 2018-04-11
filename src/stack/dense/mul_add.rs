@@ -53,27 +53,27 @@ mod test {
 
     #[test]
     fn mul_add() {
-        let subject = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
-        let other = dense_vec![2.0, 1.0, 0.0, -1.0, -2.0];
-        let expected = dense_vec![4.0, 2.5, 1.0, 0.0, -1.0];
+        let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
+        let other = DenseVector::from([2.0, 1.0, 0.0, -1.0, -2.0]);
+        let expected = DenseVector::from([4.0, 2.5, 1.0, 0.0, -1.0]);
         let result = other.mul_add(2.0, &subject);
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
     fn mul_add_from_ref() {
-        let subject = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
-        let other = dense_vec![2.0, 1.0, 0.0, -1.0, -2.0];
-        let expected = dense_vec![4.0, 2.5, 1.0, 0.0, -1.0];
+        let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
+        let other = DenseVector::from([2.0, 1.0, 0.0, -1.0, -2.0]);
+        let expected = DenseVector::from([4.0, 2.5, 1.0, 0.0, -1.0]);
         let result = (&other).mul_add(2.0, &subject);
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
     fn mul_add_assign() {
-        let subject = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
-        let other = dense_vec![2.0, 1.0, 0.0, -1.0, -2.0];
-        let expected = dense_vec![4.0, 2.5, 1.0, 0.0, -1.0];
+        let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
+        let other = DenseVector::from([2.0, 1.0, 0.0, -1.0, -2.0]);
+        let expected = DenseVector::from([4.0, 2.5, 1.0, 0.0, -1.0]);
         let mut result = other;
         result.mul_add_assign(2.0, &subject);
         expect!(result).to(be_equal_to(expected));

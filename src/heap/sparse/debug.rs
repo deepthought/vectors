@@ -29,7 +29,7 @@ mod test {
 
     #[test]
     fn debug() {
-        let vector = sparse_vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0)];
+        let vector = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0)]);
         let subject = format!("{:?}", vector);
         let expected = "[(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0)]";
         expect!(subject).to(be_equal_to(expected));
