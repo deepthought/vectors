@@ -2,23 +2,25 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+//! Sparse stack-allocated vector representation.
+
 use std::fmt;
 use std::iter::{IntoIterator, FromIterator};
 use std::ops::{Add, Sub, Mul, Div};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
 
 use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
+use ordered_iter::OrderedMapIterator;
 use arrayvec::{Array, ArrayVec};
 
-use {Dot, Vector, VectorOps, VectorAssignOps};
+use self::iter::OrderedMapIterable;
+use {Vector, VectorOps, VectorAssignOps};
 
 mod add;
 mod sub;
 mod mul;
 mod div;
 mod mul_add;
-
-mod dot;
 
 mod debug;
 mod iter;
@@ -107,11 +109,19 @@ where
 
 impl<'a, T, A> Vector<'a, T> for SparseVector<A>
 where
-    Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self> + Dot,
+    Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
     T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
     type Scalar = T;
+
+    fn dot(&self, rhs: &Self) -> Self::Scalar {
+        let iter = rhs.iter().ordered_map_iterator();
+        self.iter()
+            .inner_join_map(iter)
+            .fold(T::zero(),
+                  |sum, (_, (lhs, rhs))| sum + (lhs * rhs))
+    }
 }
 
 #[cfg(test)]
@@ -134,5 +144,13 @@ mod test {
         let subject = SparseVector::from(VALUES.clone());
         let expected = ArrayVec::from(VALUES);
         expect!(subject.components).to(be_equal_to(expected));
+    }
+
+    #[test]
+    fn dot() {
+        let subject = SparseVector::from([(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let other = SparseVector::from([(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)]);
+        let dot = subject.dot(&other);
+        expect!(dot).to(be_close_to(1.85));
     }
 }

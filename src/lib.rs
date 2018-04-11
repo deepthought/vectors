@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-//!
+//! Vector representations for use in high dimensional vector spaces.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(not(test), feature(lang_items))]
@@ -31,12 +31,6 @@ use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use num_traits::{MulAdd, MulAddAssign};
 
-pub trait Dot {
-    type Output;
-
-    fn dot(&self, rhs: &Self) -> Self::Output;
-}
-
 pub trait VectorOps<'a, Scalar>: 'a + Sized
     + Add<&'a Self, Output = Self>
     + Sub<&'a Self, Output = Self>
@@ -53,8 +47,10 @@ pub trait VectorAssignOps<'a, Scalar>: 'a + Sized
     + MulAddAssign<Scalar, &'a Self>
 {}
 
-pub trait Vector<'a, Scalar>: PartialEq + Dot + VectorOps<'a, Scalar> {
+pub trait Vector<'a, Scalar>: PartialEq + VectorOps<'a, Scalar> {
     type Scalar;
+
+    fn dot(&self, rhs: &Self) -> Self::Scalar;
 }
 
 pub trait VectorAssign<'a, Scalar>: Vector<'a, Scalar> + VectorAssignOps<'a, Scalar> {}

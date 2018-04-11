@@ -1,3 +1,5 @@
+//! Heap-allocated vector representations.
+
 mod dense;
 mod sparse;
 

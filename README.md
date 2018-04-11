@@ -11,7 +11,14 @@ Sparse & dense vectors for use in high dimensional vector spaces.
 
 ## Motivation
 
-Many machine-learning algorithms work by calculating the dot product of vectors in high-dimensional vector spaces.
+Many machine-learning algorithms make use of vectors in high-dimensional vector spaces.
+
+The **vectors** provides efficient implementations for the following representations:
+
+|       | Dense | Sparse |
+|-------|-------|--------|
+| **Heap**  | ✅     | ✅      |
+| **Stack** | ✅     | ✅      |
 
 ## Getting Started
 
@@ -32,23 +39,22 @@ Once that's done you're ready to play!
 # Example
 
 ```rust
-#[macro_use(dense_vec, sparse_vec)]
 extern crate vectors;
 
-use vectors::{SparseVector, DenseVector, Dot};
+use vectors::Vector;
+use vectors::heap::{SparseVector, DenseVector};
 
 fn main() {
-  let sparse_1 = sparse_vec![(0, 0.1), (2, 0.2), (4, 0.3), (6, 0.4)];
-  let sparse_2 = sparse_vec![(0, 0.2), (3, 0.4), (5, 0.2), (6, 0.6)];
+  let sparse_1 = SparseVector::from(vec![(0, 0.1), (2, 0.2), (4, 0.3), (6, 0.4)]);
+  let sparse_2 = SparseVector::from(vec![(0, 0.2), (3, 0.4), (5, 0.2), (6, 0.6)]);
   let dot = sparse_1.dot(&sparse_2);
   println!("{:?}", dot);
 
-  let dense_1 = dense_vec![0.0, 1.0, 2.0, 4.0, 6.0];
-  let dense_2 = dense_vec![0.2, 3.0, 0.0, 1.5, 6.0];
+  let dense_1 = DenseVector::from(vec![0.0, 1.0, 2.0, 4.0, 6.0]);
+  let dense_2 = DenseVector::from(vec![0.2, 3.0, 0.0, 1.5, 6.0]);
   let dot = dense_1.dot(&dense_2);
   println!("{:?}", dot);
 }
-
 ```
 
 ## Contributing

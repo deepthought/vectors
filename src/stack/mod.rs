@@ -1,3 +1,5 @@
+//! Stack-allocated vector representations.
+
 mod dense;
 mod sparse;
 

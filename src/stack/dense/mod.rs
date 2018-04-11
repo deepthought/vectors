@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+//! Dense stack-allocated vector representation.
+
 use std::fmt;
 use std::iter::FromIterator;
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
@@ -9,15 +11,13 @@ use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
 use arrayvec::{Array, ArrayVec};
 
-use {Dot, Vector, VectorOps, VectorAssignOps};
+use {Vector, VectorOps, VectorAssignOps};
 
 mod add;
 mod sub;
 mod mul;
 mod div;
 mod mul_add;
-
-mod dot;
 
 mod debug;
 mod iter;
@@ -111,11 +111,19 @@ where
 
 impl<'a, T, A> Vector<'a, T> for DenseVector<A>
 where
-    Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self> + Dot,
+    Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
     T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
     A: 'a + Copy + PartialEq + Array<Item = T>,
 {
     type Scalar = T;
+
+    fn dot(&self, rhs: &Self) -> Self::Scalar {
+        let iter = rhs.components.iter();
+        self.components.iter()
+            .zip(iter)
+            .fold(T::zero(),
+                  |sum, (lhs, rhs)| sum + ((*lhs) * (*rhs)))
+    }
 }
 
 #[cfg(test)]
@@ -138,5 +146,13 @@ mod test {
         let subject = DenseVector::from(VALUES.clone());
         let expected = ArrayVec::from(VALUES);
         expect!(subject.components).to(be_equal_to(expected));
+    }
+
+    #[test]
+    fn dot() {
+        let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 4.0]);
+        let other = DenseVector::from([0.1, 0.2, 0.3, 0.4, 0.0]);
+        let dot = subject.dot(&other);
+        expect!(dot).to(be_close_to(1.2));
     }
 }
