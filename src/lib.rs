@@ -16,10 +16,7 @@ extern crate arrayvec;
 pub mod stack;
 
 #[macro_use]
-pub mod dense;
-
-#[macro_use]
-pub mod sparse;
+pub mod heap;
 
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 

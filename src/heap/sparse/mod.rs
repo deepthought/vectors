@@ -28,7 +28,7 @@ mod dot;
 mod debug;
 mod iter;
 
-pub use sparse::iter::{Iter, IntoIter};
+pub use self::iter::{Iter, IntoIter};
 
 /// A sparse vector representation with efficient iteration.
 #[derive(Clone, PartialEq)]

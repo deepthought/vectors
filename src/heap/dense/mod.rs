@@ -29,7 +29,7 @@ mod dot;
 mod debug;
 mod iter;
 
-pub use dense::iter::{Iter, IntoIter};
+pub use self::iter::{Iter, IntoIter};
 
 /// A dense vector representation with efficient iteration.
 #[derive(Clone, PartialEq)]

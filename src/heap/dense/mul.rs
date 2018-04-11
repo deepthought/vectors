@@ -2,42 +2,40 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-use dense::*;
+use super::*;
 
-impl<'a, T> MulAdd<T, &'a DenseVector<T>> for DenseVector<T>
+impl<T> Mul<T> for DenseVector<T>
 where
-    T: Copy + MulAddAssign<T, T>,
+    T: Copy + MulAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn mul_add(mut self, a: T, b: &'a Self) -> Self::Output {
-        self.mul_add_assign(a, b);
+    fn mul(mut self, rhs: T) -> Self::Output {
+        self.mul_assign(rhs);
         self
     }
 }
 
-impl<'a, T> MulAdd<T, &'a DenseVector<T>> for &'a DenseVector<T>
+impl<'a, T> Mul<T> for &'a DenseVector<T>
 where
-    T: Copy + MulAddAssign<T, T>,
+    T: Copy + MulAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn mul_add(self, a: T, b: Self) -> Self::Output {
-        self.clone().mul_add(a, b)
+    fn mul(self, rhs: T) -> Self::Output {
+        self.clone().mul(rhs)
     }
 }
 
-impl<'a, T> MulAddAssign<T, &'a DenseVector<T>> for DenseVector<T>
+impl<T> MulAssign<T> for DenseVector<T>
 where
-    T: Copy + MulAddAssign<T, T>,
+    T: Copy + MulAssign<T>,
 {
-    fn mul_add_assign(&mut self, a: T, b: &'a Self) {
-        assert_eq!(self.len(), b.len());
-        let iter = b.iter();
-        for (lhs, (_, rhs)) in self.components.iter_mut().zip(iter) {
-            lhs.mul_add_assign(a, rhs);
+    fn mul_assign(&mut self, rhs: T) {
+        for lhs in &mut self.components {
+            *lhs *= rhs;
         }
     }
 }
