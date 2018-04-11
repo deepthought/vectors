@@ -8,7 +8,8 @@ use sparse::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
 impl<T> Dot for SparseVector<T>
-    where T: Copy + Zero + Num
+where
+    T: Copy + Zero + Num
 {
     type Output = T;
 

@@ -4,38 +4,37 @@
 
 use sparse::*;
 
-impl<T, U> Mul<U> for SparseVector<T>
-    where T: Copy + Zero + Mul<T, Output = T>,
-          U: Into<T>
+impl<T> Mul<T> for SparseVector<T>
+where
+    T: Copy + Zero + Mul<T, Output = T>,
 {
     type Output = SparseVector<T>;
 
-    fn mul(mut self, rhs: U) -> Self::Output {
+    fn mul(mut self, rhs: T) -> Self::Output {
         self.mul_assign(rhs);
         self
     }
 }
 
-impl<'a, T, U> Mul<U> for &'a SparseVector<T>
-    where T: Copy + Zero + Mul<T, Output = T>,
-          U: Into<T>
+impl<'a, T> Mul<T> for &'a SparseVector<T>
+where
+    T: Copy + Zero + Mul<T, Output = T>,
 {
     type Output = SparseVector<T>;
 
     #[inline]
-    fn mul(self, rhs: U) -> Self::Output {
+    fn mul(self, rhs: T) -> Self::Output {
         self.clone().mul(rhs)
     }
 }
 
-impl<T, U> MulAssign<U> for SparseVector<T>
-    where T: Copy + Zero + Mul<T, Output = T>,
-          U: Into<T>
+impl<T> MulAssign<T> for SparseVector<T>
+where
+    T: Copy + Zero + Mul<T, Output = T>,
 {
-    fn mul_assign(&mut self, rhs: U) {
-        let into: T = rhs.into();
+    fn mul_assign(&mut self, rhs: T) {
         for (_, lhs) in &mut self.components {
-            *lhs = (*lhs) * into;
+            *lhs = (*lhs) * rhs;
         }
     }
 }

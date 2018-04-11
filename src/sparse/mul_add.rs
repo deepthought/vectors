@@ -7,31 +7,34 @@ use sparse::*;
 use sparse::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
-impl<'b, T> MulAdd<T, &'b SparseVector<T>> for SparseVector<T>
-    where T: Copy + Zero + MulAdd<T, T, Output = T>,
+impl<'a, T> MulAdd<T, &'a SparseVector<T>> for SparseVector<T>
+where
+    T: Copy + Zero + MulAdd<T, T, Output = T>,
 {
     type Output = SparseVector<T>;
 
-    fn mul_add(mut self, a: T, b: &'b SparseVector<T>) -> Self::Output {
+    fn mul_add(mut self, a: T, b: &'a SparseVector<T>) -> Self::Output {
         self.mul_add_assign(a, b);
         self
     }
 }
 
-impl<'a, 'b, T> MulAdd<T, &'b SparseVector<T>> for &'a SparseVector<T>
-    where T: Copy + Zero + MulAdd<T, T, Output = T>,
+impl<'a, T> MulAdd<T, &'a SparseVector<T>> for &'a SparseVector<T>
+where
+    T: Copy + Zero + MulAdd<T, T, Output = T>,
 {
     type Output = SparseVector<T>;
 
-    fn mul_add(self, a: T, b: &'b SparseVector<T>) -> Self::Output {
+    fn mul_add(self, a: T, b: &'a SparseVector<T>) -> Self::Output {
         self.clone().mul_add(a, b)
     }
 }
 
-impl<'b, T> MulAddAssign<T, &'b SparseVector<T>> for SparseVector<T>
-    where T: Copy + Zero + MulAdd<T, T, Output = T>,
+impl<'a, T> MulAddAssign<T, &'a SparseVector<T>> for SparseVector<T>
+where
+    T: Copy + Zero + MulAdd<T, T, Output = T>,
 {
-    fn mul_add_assign(&mut self, a: T, b: &'b SparseVector<T>) {
+    fn mul_add_assign(&mut self, a: T, b: &'a SparseVector<T>) {
         self.components = {
             let iter = b.iter().ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);

@@ -29,7 +29,8 @@ pub struct OrderedMapIteratorWrapper<I> {
 }
 
 impl<I> Iterator for OrderedMapIteratorWrapper<I>
-    where I: Iterator
+where
+    I: Iterator
 {
     type Item = I::Item;
 
@@ -45,7 +46,8 @@ impl<I> Iterator for OrderedMapIteratorWrapper<I>
 }
 
 impl<I, K, V> OrderedMapIterator for OrderedMapIteratorWrapper<I>
-    where I: Iterator<Item = (K, V)>
+where
+    I: Iterator<Item = (K, V)>
 {
     type Key = K;
     type Val = V;
@@ -58,7 +60,10 @@ pub trait OrderedMapIterable: Sized {
     }
 }
 
-impl<I, K, V> OrderedMapIterable for I where I: Iterator<Item = (K, V)> {}
+impl<I, K, V> OrderedMapIterable for I
+where
+    I: Iterator<Item = (K, V)>
+{}
 
 pub struct IntoIter<T> {
     inner: <Vec<(usize, T)> as IntoIterator>::IntoIter,
@@ -92,7 +97,10 @@ impl<T> OrderedMapIterator for IntoIter<T> {
     type Val = T;
 }
 
-pub struct Iter<'a, T> where T: 'a {
+pub struct Iter<'a, T>
+where
+    T: 'a
+{
     inner: <&'a [(usize, T)] as IntoIterator>::IntoIter,
 }
 
@@ -104,7 +112,8 @@ impl<'a, T> Iter<'a, T> {
 }
 
 impl<'a, T> Iterator for Iter<'a, T>
-    where T: Copy
+where
+    T: Copy
 {
     type Item = (usize, T);
 
@@ -115,7 +124,8 @@ impl<'a, T> Iterator for Iter<'a, T>
 }
 
 impl<'a, T> ExactSizeIterator for Iter<'a, T>
-    where T: Copy
+where
+    T: Copy
 {
     #[inline]
     fn len(&self) -> usize {
@@ -124,7 +134,8 @@ impl<'a, T> ExactSizeIterator for Iter<'a, T>
 }
 
 impl<'a, T> OrderedMapIterator for Iter<'a, T>
-    where T: Copy
+where
+    T: Copy
 {
     type Key = usize;
     type Val = T;

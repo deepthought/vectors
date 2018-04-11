@@ -13,8 +13,8 @@ use {Dot, Vector, VectorOps, VectorAssignOps};
 
 #[macro_export]
 macro_rules! sparse_vec {
-    ($(($i:expr, $v:expr)),*) => (SparseVector::from_iter(vec![$(($i, $v)),*]));
-    ($(($i:expr, $v:expr)),+,) => (sparse_vec!($($e),+));
+    ($(($i:expr, $v:expr)),*) => (SparseVector::from(vec![$(($i, $v)),*]));
+    ($(($i:expr, $v:expr)),+,) => (SparseVector::from(vec![$(($i, $v)),+]));
 }
 
 mod add;
@@ -51,7 +51,7 @@ impl<T> SparseVector<T> {
 impl<T> From<Vec<(usize, T)>> for SparseVector<T> {
     #[inline]
     fn from(items: Vec<(usize, T)>) -> Self {
-        SparseVector { components: items }
+        Self { components: items }
     }
 }
 
@@ -63,7 +63,7 @@ where
     + Mul<T, Output = Self>
     + Div<T, Output = Self>
     + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<Output = T>,
+    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
 {}
 
 impl<'a, T> VectorAssignOps<'a, T> for SparseVector<T>
@@ -80,7 +80,7 @@ where
 impl<'a, T> Vector<'a, T> for SparseVector<T>
 where
     Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self> + Dot,
-    T: 'a + Copy + NumAssign + MulAdd<Output = T>,
+    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
 {
     type Scalar = T;
 }
@@ -88,8 +88,6 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
-
-    use std::iter::FromIterator;
 
     use expectest::prelude::*;
 

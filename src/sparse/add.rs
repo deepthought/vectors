@@ -7,44 +7,44 @@ use sparse::*;
 use sparse::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
-impl<'b, T, U> Add<&'b SparseVector<U>> for SparseVector<T>
-    where T: Copy + Zero + Add<T, Output = T>,
-          U: Copy + Into<T>
+impl<'a, T> Add<&'a SparseVector<T>> for SparseVector<T>
+where
+    T: Copy + Zero + Add<T, Output = T>,
 {
     type Output = SparseVector<T>;
 
     #[inline]
-    fn add(mut self, rhs: &'b SparseVector<U>) -> Self::Output {
+    fn add(mut self, rhs: &'a SparseVector<T>) -> Self::Output {
         self.add_assign(rhs);
         self
     }
 }
 
-impl<'a, 'b, T, U> Add<&'b SparseVector<U>> for &'a SparseVector<T>
-    where T: Copy + Zero + Add<T, Output = T>,
-          U: Copy + Into<T>
+impl<'a, T> Add<&'a SparseVector<T>> for &'a SparseVector<T>
+where
+    T: Copy + Zero + Add<T, Output = T>,
 {
     type Output = SparseVector<T>;
 
     #[inline]
-    fn add(self, rhs: &'b SparseVector<U>) -> Self::Output {
+    fn add(self, rhs: &'a SparseVector<T>) -> Self::Output {
         self.clone().add(rhs)
     }
 }
 
-impl<'b, T, U> AddAssign<&'b SparseVector<U>> for SparseVector<T>
-    where T: Copy + Zero + Add<T, Output = T>,
-          U: Copy + Into<T>
+impl<'a, T> AddAssign<&'a SparseVector<T>> for SparseVector<T>
+where
+    T: Copy + Zero + Add<T, Output = T>,
 {
-    fn add_assign(&mut self, rhs: &'b SparseVector<U>) {
+    fn add_assign(&mut self, rhs: &'a SparseVector<T>) {
         self.components = {
             let iter = rhs.iter().ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {
-                        (Some(l), Some(r)) => l + r.into(),
+                        (Some(l), Some(r)) => l + r,
                         (Some(l), None) => l,
-                        (None, Some(r)) => r.into(),
+                        (None, Some(r)) => r,
                         _ => unreachable!(),
                     };
                     if value.is_zero() {

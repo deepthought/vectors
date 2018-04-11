@@ -4,38 +4,37 @@
 
 use sparse::*;
 
-impl<T, U> Div<U> for SparseVector<T>
-    where T: Copy + Zero + Div<T, Output = T>,
-          U: Into<T>
+impl<T> Div<T> for SparseVector<T>
+where
+    T: Copy + Zero + Div<T, Output = T>,
 {
     type Output = SparseVector<T>;
 
-    fn div(mut self, rhs: U) -> Self::Output {
+    fn div(mut self, rhs: T) -> Self::Output {
         self.div_assign(rhs);
         self
     }
 }
 
-impl<'a, T, U> Div<U> for &'a SparseVector<T>
-    where T: Copy + Zero + Div<T, Output = T>,
-          U: Into<T>
+impl<'a, T> Div<T> for &'a SparseVector<T>
+where
+    T: Copy + Zero + Div<T, Output = T>,
 {
     type Output = SparseVector<T>;
 
     #[inline]
-    fn div(self, rhs: U) -> Self::Output {
+    fn div(self, rhs: T) -> Self::Output {
         self.clone().div(rhs)
     }
 }
 
-impl<T, U> DivAssign<U> for SparseVector<T>
-    where T: Copy + Zero + Div<T, Output = T>,
-          U: Into<T>
+impl<T> DivAssign<T> for SparseVector<T>
+where
+    T: Copy + Zero + Div<T, Output = T>,
 {
-    fn div_assign(&mut self, rhs: U) {
-        let into: T = rhs.into();
+    fn div_assign(&mut self, rhs: T) {
         for (_, lhs) in &mut self.components {
-            *lhs = (*lhs) / into;
+            *lhs = (*lhs) / rhs;
         }
     }
 }
