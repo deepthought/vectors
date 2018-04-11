@@ -35,8 +35,6 @@ Once that's done you're ready to play!
 #[macro_use(dense_vec, sparse_vec)]
 extern crate vectors;
 
-use std::iter::FromIterator;
-
 use vectors::{SparseVector, DenseVector, Dot};
 
 fn main() {
