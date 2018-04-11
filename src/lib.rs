@@ -4,6 +4,16 @@
 
 //!
 
+#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(not(test), feature(lang_items))]
+
+#[cfg(not(feature = "std"))]
+extern crate core as std;
+
+#[cfg(not(feature = "std"))]
+#[macro_use]
+extern crate std;
+
 #[cfg(test)]
 #[macro_use(expect)]
 extern crate expectest;
@@ -14,6 +24,7 @@ extern crate arrayvec;
 
 pub mod stack;
 
+#[cfg(feature = "std")]
 pub mod heap;
 
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
