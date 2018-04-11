@@ -10,19 +10,20 @@ extern crate expectest;
 
 extern crate num_traits;
 extern crate ordered_iter;
+extern crate arrayvec;
 
 #[macro_use]
-mod dense;
+pub mod stack;
 
 #[macro_use]
-mod sparse;
+pub mod dense;
+
+#[macro_use]
+pub mod sparse;
 
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use num_traits::{MulAdd, MulAddAssign};
-
-pub use dense::DenseVector;
-pub use sparse::SparseVector;
 
 pub trait Dot {
     type Output;
@@ -52,4 +53,7 @@ pub trait Vector<'a, Scalar>: PartialEq + Dot + VectorOps<'a, Scalar> {
 
 pub trait VectorAssign<'a, Scalar>: Vector<'a, Scalar> + VectorAssignOps<'a, Scalar> {}
 
-impl<'a, T, S> VectorAssign<'a, S> for T where T: 'a + Vector<'a, S> + VectorAssignOps<'a, S> {}
+impl<'a, T, S> VectorAssign<'a, S> for T
+where
+    T: 'a + Vector<'a, S> + VectorAssignOps<'a, S>
+{}
