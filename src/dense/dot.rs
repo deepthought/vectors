@@ -5,7 +5,8 @@
 use dense::*;
 
 impl<T> Dot for DenseVector<T>
-    where T: Copy + Zero + Num
+where
+    T: Copy + Zero + Num
 {
     type Output = T;
 

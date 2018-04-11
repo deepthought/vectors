@@ -5,7 +5,8 @@
 use dense::*;
 
 impl<T> fmt::Debug for DenseVector<T>
-    where T: Copy + fmt::Debug
+where
+    T: Copy + fmt::Debug
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let _ = write!(f, "[");
@@ -24,13 +25,13 @@ impl<T> fmt::Debug for DenseVector<T>
 mod test {
     use super::*;
 
-    use std::iter::{IntoIterator, FromIterator};
-
     use expectest::prelude::*;
 
     #[test]
     fn debug() {
-        let v = DenseVector::from_iter(vec![0.0, 0.25, 0.5, 0.75, 1.0].into_iter());
-        expect!(format!("{:?}", v)).to(be_equal_to("[0.0, 0.25, 0.5, 0.75, 1.0]"));
+        let vector = dense_vec![0.0, 0.25, 0.5, 0.75, 1.0];
+        let subject = format!("{:?}", vector);
+        let expected = "[0.0, 0.25, 0.5, 0.75, 1.0]";
+        expect!(subject).to(be_equal_to(expected));
     }
 }

@@ -4,39 +4,38 @@
 
 use dense::*;
 
-impl<T, U> Mul<U> for DenseVector<T>
-    where T: Copy + MulAssign<T>,
-          U: Into<T>
+impl<T> Mul<T> for DenseVector<T>
+where
+    T: Copy + MulAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn mul(mut self, rhs: U) -> Self::Output {
+    fn mul(mut self, rhs: T) -> Self::Output {
         self.mul_assign(rhs);
         self
     }
 }
 
-impl<'a, T, U> Mul<U> for &'a DenseVector<T>
-    where T: Copy + MulAssign<T>,
-          U: Into<T>
+impl<'a, T> Mul<T> for &'a DenseVector<T>
+where
+    T: Copy + MulAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn mul(self, rhs: U) -> Self::Output {
+    fn mul(self, rhs: T) -> Self::Output {
         self.clone().mul(rhs)
     }
 }
 
-impl<T, U> MulAssign<U> for DenseVector<T>
-    where T: Copy + MulAssign<T>,
-          U: Into<T>
+impl<T> MulAssign<T> for DenseVector<T>
+where
+    T: Copy + MulAssign<T>,
 {
-    fn mul_assign(&mut self, rhs: U) {
-        let into: T = rhs.into();
+    fn mul_assign(&mut self, rhs: T) {
         for lhs in &mut self.components {
-            *lhs *= into;
+            *lhs *= rhs;
         }
     }
 }
@@ -49,9 +48,9 @@ mod test {
 
     #[test]
     fn mul_add() {
-        let subject: DenseVector<f64> = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
-        let other: DenseVector<f64> = dense_vec![2.0, 1.0, 0.0, -1.0, -2.0];
-        let expected: DenseVector<f64> = dense_vec![4.0, 2.5, 1.0, 0.0, -1.0];
+        let subject = dense_vec![0.0, 0.5, 1.0, 2.0, 3.0];
+        let other = dense_vec![2.0, 1.0, 0.0, -1.0, -2.0];
+        let expected = dense_vec![4.0, 2.5, 1.0, 0.0, -1.0];
         let result = other.mul_add(2.0, &subject);
         expect!(result).to(be_equal_to(expected));
     }

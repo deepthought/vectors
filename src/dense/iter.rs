@@ -5,7 +5,8 @@
 use dense::*;
 
 impl<T> FromIterator<T> for DenseVector<T>
-    where T: Copy
+where
+    T: Copy
 {
     #[inline]
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
@@ -62,19 +63,26 @@ impl<T> ExactSizeIterator for IntoIter<T> {
     }
 }
 
-pub struct Iter<'a, T> where T: 'a {
+pub struct Iter<'a, T>
+where
+    T: 'a
+{
     index: usize,
     inner: <&'a [T] as IntoIterator>::IntoIter,
 }
 
-impl<'a, T> Iter<'a, T> where T: 'a {
+impl<'a, T> Iter<'a, T>
+where
+    T: 'a
+{
     pub fn new(iter: <&'a [T] as IntoIterator>::IntoIter) -> Self {
         Iter { index: 0, inner: iter }
     }
 }
 
 impl<'a, T> Iterator for Iter<'a, T>
-    where T: Copy
+where
+    T: Copy
 {
     type Item = (usize, T);
 
@@ -96,7 +104,8 @@ impl<'a, T> Iterator for Iter<'a, T>
 }
 
 impl<'a, T> ExactSizeIterator for Iter<'a, T>
-    where T: Copy
+where
+    T: Copy
 {
     #[inline]
     fn len(&self) -> usize {

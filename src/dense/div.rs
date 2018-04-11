@@ -4,40 +4,39 @@
 
 use dense::*;
 
-impl<T, U> Div<U> for DenseVector<T>
-    where T: Copy + DivAssign<T>,
-          U: Into<T>
+impl<T> Div<T> for DenseVector<T>
+where
+    T: Copy + DivAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn div(mut self, rhs: U) -> Self::Output {
+    fn div(mut self, rhs: T) -> Self::Output {
         self.div_assign(rhs);
         self
     }
 }
 
-impl<'a, T, U> Div<U> for &'a DenseVector<T>
-    where T: Copy + DivAssign<T>,
-          U: Into<T>
+impl<'a, T> Div<T> for &'a DenseVector<T>
+where
+    T: Copy + DivAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn div(self, rhs: U) -> Self::Output {
+    fn div(self, rhs: T) -> Self::Output {
         self.clone().div(rhs)
     }
 }
 
-impl<T, U> DivAssign<U> for DenseVector<T>
-    where T: Copy + DivAssign<T>,
-          U: Into<T>
+impl<T> DivAssign<T> for DenseVector<T>
+where
+    T: Copy + DivAssign<T>,
 {
     #[inline]
-    fn div_assign(&mut self, rhs: U) {
-        let into: T = rhs.into();
+    fn div_assign(&mut self, rhs: T) {
         for lhs in &mut self.components {
-            *lhs /= into;
+            *lhs /= rhs;
         }
     }
 }

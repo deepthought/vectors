@@ -13,9 +13,9 @@ use {Dot, Vector, VectorOps, VectorAssignOps};
 
 #[macro_export]
 macro_rules! dense_vec {
-    ($e:expr; $n:expr) => (DenseVector::from_iter(vec![$e; $n]));
-    ($($e:expr),*) => (DenseVector::from_iter(vec![$($e),*]));
-    ($($e:expr),+,) => (dense_vec!($($e),+));
+    ($e:expr; $n:expr) => (DenseVector::from(vec![$e; $n]));
+    ($($e:expr),*) => (DenseVector::from(vec![$($e),*]));
+    ($($e:expr),+,) => (DenseVector::from(vec![$($e),+]));
 }
 
 mod add;
@@ -57,14 +57,14 @@ impl<T> DenseVector<T> {
 impl<T> From<Vec<T>> for DenseVector<T> {
     #[inline]
     fn from(items: Vec<T>) -> Self {
-        DenseVector { components: items }
+        Self { components: items }
     }
 }
 
 impl<'a, T> VectorOps<'a, T> for DenseVector<T>
 where
     Self: 'a + VectorAssignOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<Output = T>,
+    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
 {}
 
 impl<'a, T> VectorAssignOps<'a, T> for DenseVector<T>
@@ -75,7 +75,7 @@ where
 impl<'a, T> Vector<'a, T> for DenseVector<T>
 where
     Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self> + Dot,
-    T: 'a + Copy + NumAssign + MulAdd<Output = T>,
+    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
 {
     type Scalar = T;
 }
@@ -83,8 +83,6 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
-
-    use std::iter::FromIterator;
 
     use expectest::prelude::*;
 

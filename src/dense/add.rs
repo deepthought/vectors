@@ -4,40 +4,40 @@
 
 use dense::*;
 
-impl<'b, T, U> Add<&'b DenseVector<U>> for DenseVector<T>
-    where T: Copy + AddAssign<T>,
-          U: Copy + Into<T>
+impl<'a, T> Add<&'a DenseVector<T>> for DenseVector<T>
+where
+    T: Copy + AddAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn add(mut self, rhs: &'b DenseVector<U>) -> Self::Output {
+    fn add(mut self, rhs: &'a Self) -> Self::Output {
         self.add_assign(rhs);
         self
     }
 }
 
-impl<'a, 'b, T, U> Add<&'b DenseVector<U>> for &'a DenseVector<T>
-    where T: Copy + AddAssign<T>,
-          U: Copy + Into<T>
+impl<'a, T> Add<&'a DenseVector<T>> for &'a DenseVector<T>
+where
+    T: Copy + AddAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn add(self, rhs: &'b DenseVector<U>) -> Self::Output {
+    fn add(self, rhs: Self) -> Self::Output {
         self.clone().add(rhs)
     }
 }
 
-impl<'b, T, U> AddAssign<&'b DenseVector<U>> for DenseVector<T>
-    where T: Copy + AddAssign<T>,
-          U: Copy + Into<T>
+impl<'a, T> AddAssign<&'a DenseVector<T>> for DenseVector<T>
+where
+    T: Copy + AddAssign<T>,
 {
-    fn add_assign(&mut self, rhs: &'b DenseVector<U>) {
+    fn add_assign(&mut self, rhs: &'a Self) {
         assert_eq!(self.len(), rhs.len());
         let iter = rhs.iter();
         for (lhs, (_, rhs)) in self.components.iter_mut().zip(iter) {
-            *lhs += rhs.into();
+            *lhs += rhs;
         }
     }
 }

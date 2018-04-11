@@ -4,40 +4,40 @@
 
 use dense::*;
 
-impl<'b, T, U> Sub<&'b DenseVector<U>> for DenseVector<T>
-    where T: Copy + SubAssign<T>,
-          U: Copy + Into<T>
+impl<'a, T> Sub<&'a DenseVector<T>> for DenseVector<T>
+where
+    T: Copy + SubAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn sub(mut self, rhs: &'b DenseVector<U>) -> Self::Output {
+    fn sub(mut self, rhs: &'a Self) -> Self::Output {
         self.sub_assign(rhs);
         self
     }
 }
 
-impl<'a, 'b, T, U> Sub<&'b DenseVector<U>> for &'a DenseVector<T>
-    where T: Copy + SubAssign<T>,
-          U: Copy + Into<T>
+impl<'a, T> Sub<&'a DenseVector<T>> for &'a DenseVector<T>
+where
+    T: Copy + SubAssign<T>,
 {
     type Output = DenseVector<T>;
 
     #[inline]
-    fn sub(self, rhs: &'b DenseVector<U>) -> Self::Output {
+    fn sub(self, rhs: Self) -> Self::Output {
         self.clone().sub(rhs)
     }
 }
 
-impl<'b, T, U> SubAssign<&'b DenseVector<U>> for DenseVector<T>
-    where T: Copy + SubAssign<T>,
-          U: Copy + Into<T>
+impl<'a, T> SubAssign<&'a DenseVector<T>> for DenseVector<T>
+where
+    T: Copy + SubAssign<T>,
 {
-    fn sub_assign(&mut self, rhs: &'b DenseVector<U>) {
+    fn sub_assign(&mut self, rhs: &'a Self) {
         assert_eq!(self.len(), rhs.len());
         let iter = rhs.iter();
         for (lhs, (_, rhs)) in self.components.iter_mut().zip(iter) {
-            *lhs -= rhs.into();
+            *lhs -= rhs;
         }
     }
 }
