@@ -7,6 +7,18 @@ use super::*;
 use super::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
+impl<T> Add<SparseVector<T>> for SparseVector<T>
+where
+    T: Copy + Zero + Add<T, Output = T>,
+{
+    type Output = SparseVector<T>;
+
+    #[inline]
+    fn add(self, rhs: SparseVector<T>) -> Self::Output {
+        self.add(&rhs)
+    }
+}
+
 impl<'a, T> Add<&'a SparseVector<T>> for SparseVector<T>
 where
     T: Copy + Zero + Add<T, Output = T>,
@@ -20,15 +32,13 @@ where
     }
 }
 
-impl<'a, T> Add<&'a SparseVector<T>> for &'a SparseVector<T>
+impl<T> AddAssign<SparseVector<T>> for SparseVector<T>
 where
     T: Copy + Zero + Add<T, Output = T>,
 {
-    type Output = SparseVector<T>;
-
     #[inline]
-    fn add(self, rhs: &'a SparseVector<T>) -> Self::Output {
-        self.clone().add(rhs)
+    fn add_assign(&mut self, rhs: SparseVector<T>) {
+        self.add_assign(&rhs)
     }
 }
 
@@ -69,16 +79,16 @@ mod test {
         let subject = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
         let other = SparseVector::from(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4)]);
         let expected = SparseVector::from(vec![(0, 0.2), (1, 0.6), (2, 1.2), (3, 0.3), (4, 2.0), (5, 4.4)]);
-        let result = subject + &other;
+        let result = subject + other;
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
-    fn add_from_ref() {
+    fn add_ref() {
         let subject = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
         let other = SparseVector::from(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4)]);
         let expected = SparseVector::from(vec![(0, 0.2), (1, 0.6), (2, 1.2), (3, 0.3), (4, 2.0), (5, 4.4)]);
-        let result = (&subject) + &other;
+        let result = subject + &other;
         expect!(result).to(be_equal_to(expected));
     }
 

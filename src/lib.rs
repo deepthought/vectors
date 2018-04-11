@@ -32,35 +32,51 @@ use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 use num_traits::{MulAdd, MulAddAssign};
 
 /// The trait for vector types implementing basic numeric operations.
-pub trait VectorOps<'a, Scalar>: 'a + Sized
-    + Add<&'a Self, Output = Self>
-    + Sub<&'a Self, Output = Self>
+pub trait VectorOps<Vector, Scalar>: Sized
+    + Add<Vector, Output = Self>
+    + Sub<Vector, Output = Self>
     + Mul<Scalar, Output = Self>
     + Div<Scalar, Output = Self>
-    + MulAdd<Scalar, &'a Self, Output = Self>
+    + MulAdd<Scalar, Vector, Output = Self>
 {}
 
 /// The trait for vector types implementing numeric assignment operators (like `+=`).
-pub trait VectorAssignOps<'a, Scalar>: 'a + Sized
-    + AddAssign<&'a Self>
-    + SubAssign<&'a Self>
+pub trait VectorAssignOps<Vector, Scalar>: Sized
+    + AddAssign<Vector>
+    + SubAssign<Vector>
     + MulAssign<Scalar>
     + DivAssign<Scalar>
-    + MulAddAssign<Scalar, &'a Self>
+    + MulAddAssign<Scalar, Vector>
 {}
 
 /// The base trait for vector types, covering comparisons,
 /// basic numeric operations, and the dot product.
-pub trait Vector<'a, Scalar>: PartialEq + VectorOps<'a, Scalar> {
+pub trait Vector<Scalar>: PartialEq + VectorOps<Self, Scalar> {
     type Scalar;
 
     fn dot(&self, rhs: &Self) -> Self::Scalar;
 }
 
-/// The trait for `Vector` types which also implement assignment operators.
-pub trait VectorAssign<'a, Scalar>: Vector<'a, Scalar> + VectorAssignOps<'a, Scalar> {}
+/// The trait for `Vector` types which also implement numeric operations
+// taking the second operand by reference.
+pub trait VectorRef<Scalar>: Vector<Scalar> + for<'a> VectorOps<&'a Self, Scalar> { }
 
-impl<'a, T, S> VectorAssign<'a, S> for T
+impl<T, S> VectorRef<S> for T
 where
-    T: 'a + Vector<'a, S> + VectorAssignOps<'a, S>
+    T: Vector<S> + for<'a> VectorOps<&'a T, S>
+{}
+
+/// The trait for `Vector` types which also implement assignment operators.
+pub trait VectorAssign<Scalar>: Vector<Scalar> + VectorAssignOps<Self, Scalar> {}
+
+impl<T, S> VectorAssign<S> for T
+where
+    T: Vector<S> + VectorAssignOps<Self, S>
+{}
+
+pub trait VectorAssignRef<Scalar>: VectorAssign<Scalar> + for<'a> VectorAssignOps<&'a Self, Scalar> { }
+
+impl<T, S> VectorAssignRef<S> for T
+where
+    T: VectorAssign<S> + for<'a> VectorAssignOps<&'a T, S>
 {}

@@ -4,6 +4,19 @@
 
 use super::*;
 
+impl<T, A> Sub<DenseVector<A>> for DenseVector<A>
+where
+    T: Copy + SubAssign<T>,
+    A: Array<Item = T>,
+{
+    type Output = DenseVector<A>;
+
+    #[inline]
+    fn sub(self, rhs: Self) -> Self::Output {
+        self.sub(&rhs)
+    }
+}
+
 impl<'a, T, A> Sub<&'a DenseVector<A>> for DenseVector<A>
 where
     T: Copy + SubAssign<T>,
@@ -18,16 +31,14 @@ where
     }
 }
 
-impl<'a, T, A> Sub<&'a DenseVector<A>> for &'a DenseVector<A>
+impl<T, A> SubAssign<DenseVector<A>> for DenseVector<A>
 where
     T: Copy + SubAssign<T>,
     A: Array<Item = T>,
 {
-    type Output = DenseVector<A>;
-
     #[inline]
-    fn sub(self, rhs: Self) -> Self::Output {
-        self.clone().sub(rhs)
+    fn sub_assign(&mut self, rhs: Self) {
+        self.sub_assign(&rhs)
     }
 }
 
@@ -56,16 +67,16 @@ mod test {
         let subject = DenseVector::from([2.0, 1.5, 1.0, 1.0, 1.0]);
         let other = DenseVector::from([2.0, 1.0, 0.0, -1.0, -2.0]);
         let expected = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
-        let result = subject - &other;
+        let result = subject - other;
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
-    fn sub_from_ref() {
+    fn sub_ref() {
         let subject = DenseVector::from([2.0, 1.5, 1.0, 1.0, 1.0]);
         let other = DenseVector::from([2.0, 1.0, 0.0, -1.0, -2.0]);
         let expected = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
-        let result = (&subject) - &other;
+        let result = subject - other;
         expect!(result).to(be_equal_to(expected));
     }
 

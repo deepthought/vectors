@@ -8,7 +8,7 @@ use std::fmt;
 use std::iter::FromIterator;
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
-use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
+use num_traits::{ NumAssign, MulAdd, MulAddAssign};
 use arrayvec::{Array, ArrayVec};
 
 use {Vector, VectorOps, VectorAssignOps};
@@ -96,24 +96,25 @@ where
     }
 }
 
-impl<'a, T, A> VectorOps<'a, T> for DenseVector<A>
+impl<V, T, A> VectorOps<V, T> for DenseVector<A>
 where
-    Self: 'a + VectorAssignOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
-    A: 'a + Copy + PartialEq + Array<Item = T>,
+    Self: Add<V, Output = Self> + Sub<V, Output = Self> + Mul<T, Output = Self> + Div<T, Output = Self> + MulAdd<T, V, Output = Self>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
+    A: Copy + PartialEq + Array<Item = T>,
 {}
 
-impl<'a, T, A> VectorAssignOps<'a, T> for DenseVector<A>
+impl<V, T, A> VectorAssignOps<V, T> for DenseVector<A>
 where
-    T: 'a + Copy + NumAssign + MulAddAssign,
-    A: 'a + Copy + PartialEq + Array<Item = T>,
+    Self: AddAssign<V> + SubAssign<V> + MulAssign<T> + DivAssign<T> + MulAddAssign<T, V>,
+    T: Copy + NumAssign + MulAddAssign,
+    A: Copy + PartialEq + Array<Item = T>,
 {}
 
-impl<'a, T, A> Vector<'a, T> for DenseVector<A>
+impl<T, A> Vector<T> for DenseVector<A>
 where
-    Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
-    A: 'a + Copy + PartialEq + Array<Item = T>,
+    Self: PartialEq + VectorOps<Self, T>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
+    A: Copy + PartialEq + Array<Item = T>,
 {
     type Scalar = T;
 

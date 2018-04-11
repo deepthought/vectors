@@ -18,19 +18,6 @@ where
     }
 }
 
-impl<'a, T, A> Div<T> for &'a DenseVector<A>
-where
-    T: Copy + DivAssign<T>,
-    A: Array<Item = T>,
-{
-    type Output = DenseVector<A>;
-
-    #[inline]
-    fn div(self, rhs: T) -> Self::Output {
-        self.clone().div(rhs)
-    }
-}
-
 impl<T, A> DivAssign<T> for DenseVector<A>
 where
     T: Copy + DivAssign<T>,
@@ -55,14 +42,6 @@ mod test {
         let subject = DenseVector::from([0.0, 1.0, 2.0, 4.0, 6.0]);
         let other = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
         let result = subject / 2.0;
-        expect!(result).to(be_equal_to(other));
-    }
-
-    #[test]
-    fn div_from_ref() {
-        let subject = DenseVector::from([0.0, 1.0, 2.0, 4.0, 6.0]);
-        let other = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
-        let result = (&subject) / 2.0;
         expect!(result).to(be_equal_to(other));
     }
 

@@ -4,6 +4,19 @@
 
 use super::*;
 
+impl<T, A> MulAdd<T, DenseVector<A>> for DenseVector<A>
+where
+    T: Copy + MulAddAssign<T, T>,
+    A: Array<Item = T>,
+{
+    type Output = DenseVector<A>;
+
+    #[inline]
+    fn mul_add(self, a: T, b: Self) -> Self::Output {
+        self.mul_add(a, &b)
+    }
+}
+
 impl<'a, T, A> MulAdd<T, &'a DenseVector<A>> for DenseVector<A>
 where
     T: Copy + MulAddAssign<T, T>,
@@ -18,16 +31,14 @@ where
     }
 }
 
-impl<'a, T, A> MulAdd<T, &'a DenseVector<A>> for &'a DenseVector<A>
+impl<T, A> MulAddAssign<T, DenseVector<A>> for DenseVector<A>
 where
     T: Copy + MulAddAssign<T, T>,
     A: Array<Item = T>,
 {
-    type Output = DenseVector<A>;
-
     #[inline]
-    fn mul_add(self, a: T, b: Self) -> Self::Output {
-        self.clone().mul_add(a, b)
+    fn mul_add_assign(&mut self, a: T, b: Self) {
+        self.mul_add_assign(a, &b)
     }
 }
 
@@ -56,16 +67,16 @@ mod test {
         let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
         let other = DenseVector::from([2.0, 1.0, 0.0, -1.0, -2.0]);
         let expected = DenseVector::from([4.0, 2.5, 1.0, 0.0, -1.0]);
-        let result = other.mul_add(2.0, &subject);
+        let result = other.mul_add(2.0, subject);
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
-    fn mul_add_from_ref() {
+    fn mul_add_ref() {
         let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 3.0]);
         let other = DenseVector::from([2.0, 1.0, 0.0, -1.0, -2.0]);
         let expected = DenseVector::from([4.0, 2.5, 1.0, 0.0, -1.0]);
-        let result = (&other).mul_add(2.0, &subject);
+        let result = other.mul_add(2.0, &subject);
         expect!(result).to(be_equal_to(expected));
     }
 

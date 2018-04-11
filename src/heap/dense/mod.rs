@@ -8,7 +8,7 @@ use std::fmt;
 use std::iter::FromIterator;
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
-use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
+use num_traits::{ NumAssign, MulAdd, MulAddAssign};
 
 use {Vector, VectorOps, VectorAssignOps};
 
@@ -53,21 +53,22 @@ impl<T> From<Vec<T>> for DenseVector<T> {
     }
 }
 
-impl<'a, T> VectorOps<'a, T> for DenseVector<T>
+impl<V, T> VectorOps<V, T> for DenseVector<T>
 where
-    Self: 'a + VectorAssignOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
+    Self: Add<V, Output = Self> + Sub<V, Output = Self> + Mul<T, Output = Self> + Div<T, Output = Self> + MulAdd<T, V, Output = Self>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
 {}
 
-impl<'a, T> VectorAssignOps<'a, T> for DenseVector<T>
+impl<V, T> VectorAssignOps<V, T> for DenseVector<T>
 where
-    T: 'a + Copy + NumAssign + MulAddAssign,
+    Self: AddAssign<V> + SubAssign<V> + MulAssign<T> + DivAssign<T> + MulAddAssign<T, V>,
+    T: Copy + NumAssign + MulAddAssign,
 {}
 
-impl<'a, T> Vector<'a, T> for DenseVector<T>
+impl<T> Vector<T> for DenseVector<T>
 where
-    Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
+    Self: PartialEq + VectorOps<Self, T>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
 {
     type Scalar = T;
 

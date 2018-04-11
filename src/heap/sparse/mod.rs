@@ -9,7 +9,7 @@ use std::iter::{IntoIterator, FromIterator};
 use std::ops::{Add, Sub, Mul, Div};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
 
-use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
+use num_traits::{NumAssign, Zero, MulAdd, MulAddAssign};
 use ordered_iter::OrderedMapIterator;
 
 use self::iter::OrderedMapIterable;
@@ -37,11 +37,6 @@ impl<T> SparseVector<T> {
     pub fn iter<'a>(&'a self) -> Iter<'a, T> {
         Iter::new(self.components.iter())
     }
-
-    // #[cfg(feature = "drain_filter")]
-    // fn shrink_to_fit(&mut self) {
-    //     self.components.drain_filter(|(i, v)| v.is_zero()).drain();
-    // }
 }
 
 impl<T> From<Vec<(usize, T)>> for SparseVector<T> {
@@ -51,32 +46,22 @@ impl<T> From<Vec<(usize, T)>> for SparseVector<T> {
     }
 }
 
-impl<'a, T> VectorOps<'a, T> for SparseVector<T>
+impl<V, T> VectorOps<V, T> for SparseVector<T>
 where
-    Self: 'a + Sized
-    + Add<&'a Self, Output = Self>
-    + Sub<&'a Self, Output = Self>
-    + Mul<T, Output = Self>
-    + Div<T, Output = Self>
-    + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
+    Self: Add<V, Output = Self> + Sub<V, Output = Self> + Mul<T, Output = Self> + Div<T, Output = Self> + MulAdd<T, V, Output = Self>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
 {}
 
-impl<'a, T> VectorAssignOps<'a, T> for SparseVector<T>
+impl<V, T> VectorAssignOps<V, T> for SparseVector<T>
 where
-    Self: 'a + Sized
-    + AddAssign<&'a Self>
-    + SubAssign<&'a Self>
-    + MulAssign<T>
-    + DivAssign<T>
-    + MulAddAssign<T, &'a Self>,
-    T: 'a + Copy + NumAssign + MulAddAssign,
+    Self: AddAssign<V> + SubAssign<V> + MulAssign<T> + DivAssign<T> + MulAddAssign<T, V>,
+    T: Copy + NumAssign + MulAddAssign,
 {}
 
-impl<'a, T> Vector<'a, T> for SparseVector<T>
+impl<T> Vector<T> for SparseVector<T>
 where
-    Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
+    Self: PartialEq + VectorOps<Self, T>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
 {
     type Scalar = T;
 

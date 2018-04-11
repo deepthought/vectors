@@ -7,6 +7,19 @@ use super::*;
 use super::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
+impl<T, A> MulAdd<T, SparseVector<A>> for SparseVector<A>
+where
+    T: Copy + Zero + MulAdd<T, T, Output = T>,
+    A: Array<Item = (usize, T)>,
+{
+    type Output = SparseVector<A>;
+
+    #[inline]
+    fn mul_add(self, a: T, b: SparseVector<A>) -> Self::Output {
+        self.mul_add(a, &b)
+    }
+}
+
 impl<'a, T, A> MulAdd<T, &'a SparseVector<A>> for SparseVector<A>
 where
     T: Copy + Zero + MulAdd<T, T, Output = T>,
@@ -14,21 +27,21 @@ where
 {
     type Output = SparseVector<A>;
 
+    #[inline]
     fn mul_add(mut self, a: T, b: &'a SparseVector<A>) -> Self::Output {
         self.mul_add_assign(a, b);
         self
     }
 }
 
-impl<'a, T, A> MulAdd<T, &'a SparseVector<A>> for &'a SparseVector<A>
+impl<T, A> MulAddAssign<T, SparseVector<A>> for SparseVector<A>
 where
     T: Copy + Zero + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
-    type Output = SparseVector<A>;
-
-    fn mul_add(self, a: T, b: &'a SparseVector<A>) -> Self::Output {
-        self.clone().mul_add(a, b)
+    #[inline]
+    fn mul_add_assign(&mut self, a: T, b: SparseVector<A>) {
+        self.mul_add_assign(a, &b)
     }
 }
 
@@ -72,16 +85,16 @@ mod test {
         let subject = Type::from_iter(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4)]);
         let other = Type::from_iter(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
         let expected = Type::from_iter(vec![(0, 0.2), (1, 0.7), (2, 1.4), (3, 0.6), (4, 2.0), (5, 4.8)]);
-        let result = subject.mul_add(2.0, &other);
+        let result = subject.mul_add(2.0, other);
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
-    fn mul_add_from_ref() {
+    fn mul_add_ref() {
         let subject = Type::from_iter(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4)]);
         let other = Type::from_iter(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
         let expected = Type::from_iter(vec![(0, 0.2), (1, 0.7), (2, 1.4), (3, 0.6), (4, 2.0), (5, 4.8)]);
-        let result = (&subject).mul_add(2.0, &other);
+        let result = subject.mul_add(2.0, &other);
         expect!(result).to(be_equal_to(expected));
     }
 

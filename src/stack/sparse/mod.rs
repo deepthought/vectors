@@ -9,7 +9,7 @@ use std::iter::{IntoIterator, FromIterator};
 use std::ops::{Add, Sub, Mul, Div};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
 
-use num_traits::{Num, NumAssign, Zero, MulAdd, MulAddAssign};
+use num_traits::{NumAssign, Zero, MulAdd, MulAddAssign};
 use ordered_iter::OrderedMapIterator;
 use arrayvec::{Array, ArrayVec};
 
@@ -44,11 +44,6 @@ where
     pub fn iter<'a>(&'a self) -> Iter<'a, T> {
         Iter::new(self.components.iter())
     }
-
-    // #[cfg(feature = "drain_filter")]
-    // fn shrink_to_fit(&mut self) {
-    //     self.components.drain_filter(|(i, v)| v.is_zero()).drain();
-    // }
 }
 
 impl<T, A> Clone for SparseVector<A>
@@ -83,34 +78,24 @@ where
     }
 }
 
-impl<'a, T, A> VectorOps<'a, T> for SparseVector<A>
+impl<V, T, A> VectorOps<V, T> for SparseVector<A>
 where
-    Self: 'a + Sized
-    + Add<&'a Self, Output = Self>
-    + Sub<&'a Self, Output = Self>
-    + Mul<T, Output = Self>
-    + Div<T, Output = Self>
-    + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
+    Self: Add<V, Output = Self> + Sub<V, Output = Self> + Mul<T, Output = Self> + Div<T, Output = Self> + MulAdd<T, V, Output = Self>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {}
 
-impl<'a, T, A> VectorAssignOps<'a, T> for SparseVector<A>
+impl<V, T, A> VectorAssignOps<V, T> for SparseVector<A>
 where
-    Self: 'a + Sized
-    + AddAssign<&'a Self>
-    + SubAssign<&'a Self>
-    + MulAssign<T>
-    + DivAssign<T>
-    + MulAddAssign<T, &'a Self>,
-    T: 'a + Copy + NumAssign + MulAddAssign,
+    Self: AddAssign<V> + SubAssign<V> + MulAssign<T> + DivAssign<T> + MulAddAssign<T, V>,
+    T: Copy + NumAssign + MulAddAssign,
     A: Array<Item = (usize, T)>,
 {}
 
-impl<'a, T, A> Vector<'a, T> for SparseVector<A>
+impl<T, A> Vector<T> for SparseVector<A>
 where
-    Self: 'a + VectorOps<'a, T> + MulAdd<T, &'a Self, Output = Self>,
-    T: 'a + Copy + NumAssign + MulAdd<T, T, Output = T>,
+    Self: PartialEq + VectorOps<Self, T>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
     type Scalar = T;
