@@ -24,7 +24,7 @@ mod iter;
 
 pub use self::iter::{Iter, IntoIter};
 
-/// A dense vector representation with efficient iteration.
+/// A dense stack-allocated multi-dimensional vector.
 pub struct DenseVector<A>
 where
     A: Array,

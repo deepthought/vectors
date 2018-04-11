@@ -24,7 +24,7 @@ mod iter;
 
 pub use self::iter::{Iter, IntoIter};
 
-/// A sparse vector representation with efficient iteration.
+/// A sparse heap-allocated multi-dimensional vector.
 #[derive(Clone, PartialEq)]
 pub struct SparseVector<T> {
     components: Vec<(usize, T)>,

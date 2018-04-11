@@ -25,7 +25,7 @@ mod iter;
 
 pub use self::iter::{Iter, IntoIter};
 
-/// A sparse vector representation with efficient iteration.
+/// A sparse stack-allocated multi-dimensional vector.
 pub struct SparseVector<A>
 where
     A: Array,

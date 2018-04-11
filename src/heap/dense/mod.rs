@@ -24,7 +24,7 @@ mod iter;
 
 pub use self::iter::{Iter, IntoIter};
 
-/// A dense vector representation with efficient iteration.
+/// A dense heap-allocated multi-dimensional vector.
 #[derive(Clone, PartialEq)]
 pub struct DenseVector<T> {
     components: Vec<T>,
