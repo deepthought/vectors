@@ -14,7 +14,7 @@ use num_traits::{NumAssign, Zero, MulAdd, MulAddAssign};
 use ordered_iter::OrderedMapIterator;
 use arrayvec::{Array, ArrayVec};
 
-use self::iter::OrderedMapIterable;
+// use self::iter::OrderedMapIterable;
 use {Vector, VectorOps, VectorAssignOps};
 
 mod add;
@@ -135,7 +135,7 @@ where
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
-    let iter = rhs.iter().ordered_map_iterator();
+    let iter = rhs.iter(); //; //.ordered_map_iterator();
     lhs.iter()
         .inner_join_map(iter)
         .fold(T::zero(),
@@ -148,7 +148,7 @@ where
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
-    let iter = rhs.iter().ordered_map_iterator();
+    let iter = rhs.iter(); //; //.ordered_map_iterator();
     lhs.iter()
         .inner_join_map(iter)
         .fold(T::zero(),
@@ -174,7 +174,7 @@ where
     type Scalar = T;
 
     fn dot(&self, rhs: &Self) -> Self::Scalar {
-        let iter = rhs.iter().ordered_map_iterator();
+        let iter = rhs.iter(); //.ordered_map_iterator();
         self.iter()
             .inner_join_map(iter)
             .fold(Self::Scalar::zero(),
@@ -182,7 +182,7 @@ where
     }
 
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
-        let iter = rhs.iter().ordered_map_iterator();
+        let iter = rhs.iter(); //; //.ordered_map_iterator();
         self.iter()
             .inner_join_map(iter)
             .fold(Self::Scalar::zero(),

@@ -47,47 +47,6 @@ where
     }
 }
 
-pub struct OrderedMapIteratorWrapper<I> {
-    inner: I
-}
-
-impl<I> Iterator for OrderedMapIteratorWrapper<I>
-where
-    I: Iterator
-{
-    type Item = I::Item;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next()
-    }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.inner.size_hint()
-    }
-}
-
-impl<I, K, V> OrderedMapIterator for OrderedMapIteratorWrapper<I>
-where
-    I: Iterator<Item = (K, V)>
-{
-    type Key = K;
-    type Val = V;
-}
-
-pub trait OrderedMapIterable: Sized {
-    #[inline]
-    fn ordered_map_iterator(self) -> OrderedMapIteratorWrapper<Self> {
-        OrderedMapIteratorWrapper { inner: self }
-    }
-}
-
-impl<I, K, V> OrderedMapIterable for I
-where
-    I: Iterator<Item = (K, V)>
-{}
-
 pub struct IntoIter<A>
 where
     A: Array,

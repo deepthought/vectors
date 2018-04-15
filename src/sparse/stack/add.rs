@@ -4,7 +4,6 @@
 
 use super::*;
 
-use super::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
 impl<T, A> Add<SparseVector<A>> for SparseVector<A>
@@ -52,7 +51,7 @@ where
 {
     fn add_assign(&mut self, rhs: &'a SparseVector<A>) {
         self.components = {
-            let iter = rhs.iter().ordered_map_iterator();
+            let iter = rhs.iter(); //.ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {

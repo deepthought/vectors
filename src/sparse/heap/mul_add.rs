@@ -4,7 +4,6 @@
 
 use super::*;
 
-use super::iter::OrderedMapIterable;
 use ordered_iter::OrderedMapIterator;
 
 impl<T> MulAdd<T, SparseVector<T>> for SparseVector<T>
@@ -48,7 +47,7 @@ where
 {
     fn mul_add_assign(&mut self, a: T, b: &'a SparseVector<T>) {
         self.components = {
-            let iter = b.iter().ordered_map_iterator();
+            let iter = b.iter(); //.ordered_map_iterator();
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {
