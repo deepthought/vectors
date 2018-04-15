@@ -22,10 +22,9 @@ extern crate num_traits;
 extern crate ordered_iter;
 extern crate arrayvec;
 
-pub mod stack;
 
-#[cfg(feature = "std")]
-pub mod heap;
+pub mod dense;
+pub mod sparse;
 
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 

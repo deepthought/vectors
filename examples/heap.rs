@@ -1,7 +1,8 @@
 extern crate vectors;
 
 use vectors::Vector;
-use vectors::heap::{SparseVector, DenseVector};
+use vectors::dense::heap::DenseVector;
+use vectors::sparse::heap::SparseVector;
 
 fn main() {
   let sparse_1 = SparseVector::from(vec![(0, 0.1), (2, 0.2), (4, 0.3), (6, 0.4)]);
