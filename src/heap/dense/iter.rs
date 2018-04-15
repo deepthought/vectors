@@ -25,6 +25,19 @@ impl<T> IntoIterator for DenseVector<T> {
     }
 }
 
+impl<'a, T> IntoIterator for &'a DenseVector<T>
+where
+    T: 'a + Copy,
+{
+    type Item = <Self::IntoIter as Iterator>::Item;
+    type IntoIter = Iter<'a, T>;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        Iter::new((&self.components[..]).into_iter())
+    }
+}
+
 pub struct IntoIter<T> {
     index: usize,
     inner: <Vec<T> as IntoIterator>::IntoIter,

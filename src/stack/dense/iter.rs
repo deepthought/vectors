@@ -21,7 +21,6 @@ impl<T, A> IntoIterator for DenseVector<A>
 where
     T: Copy,
     A: Array<Item = T>,
-    // ArrayVec<A>: IntoIterator,
 {
     type Item = <Self::IntoIter as IntoIterator>::Item;
     type IntoIter = IntoIter<A>;
@@ -29,6 +28,20 @@ where
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
         IntoIter::new(self.components.into_iter())
+    }
+}
+
+impl<'a, T, A> IntoIterator for &'a DenseVector<A>
+where
+    T: 'a + Copy,
+    A: Array<Item = T>,
+{
+    type Item = <Self::IntoIter as Iterator>::Item;
+    type IntoIter = Iter<'a, T>;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        Iter::new((&self.components[..]).into_iter())
     }
 }
 

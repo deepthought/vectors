@@ -24,6 +24,19 @@ impl<T> IntoIterator for SparseVector<T> {
     }
 }
 
+impl<'a, T> IntoIterator for &'a SparseVector<T>
+where
+    T: 'a + Copy,
+{
+    type Item = <Self::IntoIter as Iterator>::Item;
+    type IntoIter = Iter<'a, T>;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        Iter::new((&self.components[..]).into_iter())
+    }
+}
+
 pub struct OrderedMapIteratorWrapper<I> {
     inner: I
 }
