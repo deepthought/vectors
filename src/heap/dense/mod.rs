@@ -7,6 +7,7 @@
 use std::fmt;
 use std::iter::FromIterator;
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
+use std::cmp::Ordering;
 
 use num_traits::{ NumAssign, MulAdd, MulAddAssign};
 
@@ -68,16 +69,32 @@ where
 impl<T> Vector<T> for DenseVector<T>
 where
     Self: PartialEq + VectorOps<Self, T>,
-    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
+    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
 {
     type Scalar = T;
 
     fn dot(&self, rhs: &Self) -> Self::Scalar {
-        let iter = rhs.components.iter();
         self.components.iter()
-            .zip(iter)
+            .zip(rhs.components.iter())
             .fold(T::zero(),
                   |sum, (lhs, rhs)| sum + ((*lhs) * (*rhs)))
+    }
+
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
+        self.components.iter()
+            .zip(rhs.components.iter())
+            .fold(T::zero(),
+                  |sum, (lhs, rhs)| {
+                      // We might be dealing with an unsigned scalar type.
+                      // As such just doing `lhs - rhs` might lead to underfows:
+                      let delta = match lhs.partial_cmp(rhs) {
+                          Some(Ordering::Less) => (*rhs) - (*lhs),
+                          Some(Ordering::Equal) => T::zero(),
+                          Some(Ordering::Greater) => (*lhs) - (*rhs),
+                          None => T::zero(),
+                      };
+                      sum + (delta * delta)
+                  })
     }
 }
 

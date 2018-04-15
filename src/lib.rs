@@ -29,7 +29,7 @@ pub mod heap;
 
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
-use num_traits::{MulAdd, MulAddAssign};
+use num_traits::{MulAdd, MulAddAssign, real::Real};
 
 /// The trait for vector types implementing basic numeric operations.
 pub trait VectorOps<Vector, Scalar>: Sized
@@ -52,9 +52,22 @@ pub trait VectorAssignOps<Vector, Scalar>: Sized
 /// The base trait for vector types, covering comparisons,
 /// basic numeric operations, and the dot product.
 pub trait Vector<Scalar>: PartialEq + VectorOps<Self, Scalar> {
+    /// The type of the `Vector`'s scalar components.
     type Scalar;
 
+    /// Calculates the dot-product between `self` and `rhs`.
     fn dot(&self, rhs: &Self) -> Self::Scalar;
+
+    /// Calculates the squared euclidian distance between `self` and `rhs`.
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar;
+
+    /// Calculates the euclidian distance between `self` and `rhs`.
+    fn distance(&self, rhs: &Self) -> Self::Scalar
+    where
+        Self::Scalar: Real,
+    {
+        self.squared_distance(rhs).sqrt()
+    }
 }
 
 /// The trait for `Vector` types which also implement numeric operations
@@ -74,6 +87,8 @@ where
     T: Vector<S> + VectorAssignOps<Self, S>
 {}
 
+/// The trait for `VectorAssign` types which also implement
+/// assignment operations taking the second operand by reference.
 pub trait VectorAssignRef<Scalar>: VectorAssign<Scalar> + for<'a> VectorAssignOps<&'a Self, Scalar> { }
 
 impl<T, S> VectorAssignRef<S> for T
