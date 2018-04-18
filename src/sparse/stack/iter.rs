@@ -8,7 +8,6 @@ use ordered_iter::OrderedMapIterator;
 
 impl<T, A> FromIterator<(usize, T)> for SparseVector<A>
 where
-    T: Copy,
     A: Array<Item = (usize, T)>,
 {
     #[inline]

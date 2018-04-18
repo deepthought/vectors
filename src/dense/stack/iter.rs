@@ -6,7 +6,6 @@ use super::*;
 
 impl<T, A> FromIterator<T> for DenseVector<A>
 where
-    T: Copy,
     A: Array<Item = T>,
 {
     #[inline]

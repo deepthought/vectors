@@ -35,7 +35,6 @@ where
 
 impl<T, A> DenseVector<A>
 where
-    T: Copy,
     A: Array<Item = T>,
 {
     #[inline]
@@ -77,7 +76,6 @@ where
 
 impl<T, A> From<A> for DenseVector<A>
 where
-    T: Copy,
     A: Array<Item = T>,
 {
     #[inline]
@@ -88,7 +86,6 @@ where
 
 impl<T, A> From<ArrayVec<A>> for DenseVector<A>
 where
-    T: Copy,
     A: Array<Item = T>,
 {
     #[inline]
@@ -122,7 +119,7 @@ where
 
 impl<T, A> VectorExt<T> for DenseVector<A>
 where
-    Self: PartialEq + VectorOps<Self, T>,
+    Self: PartialEq + Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Copy + PartialEq + Array<Item = T>,
 {

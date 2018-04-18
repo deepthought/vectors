@@ -4,10 +4,7 @@
 
 use super::*;
 
-impl<T> FromIterator<T> for DenseVector<T>
-where
-    T: Copy
-{
+impl<T> FromIterator<T> for DenseVector<T> {
     #[inline]
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         let items: Vec<_> = iter.into_iter().collect();
