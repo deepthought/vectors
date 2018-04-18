@@ -39,9 +39,18 @@ where
 
 impl<T, A> SparseVector<A>
 where
-    T: Copy,
     A: Array<Item = (usize, T)>,
 {
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.components.len()
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.components.is_empty()
+    }
+
     #[inline]
     pub fn iter<'a>(&'a self) -> Iter<'a, T> {
         Iter::new(self.components.iter())
@@ -71,7 +80,6 @@ where
 
 impl<T, A> From<A> for SparseVector<A>
 where
-    T: Copy,
     A: Array<Item = (usize, T)>,
 {
     #[inline]

@@ -37,6 +37,16 @@ pub struct SparseVector<T> {
 
 impl<T> SparseVector<T> {
     #[inline]
+    pub fn len(&self) -> usize {
+        self.components.len()
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.components.is_empty()
+    }
+
+    #[inline]
     pub fn iter<'a>(&'a self) -> Iter<'a, T> {
         Iter::new(self.components.iter())
     }
