@@ -131,13 +131,6 @@ mod test {
     use expectest::prelude::*;
 
     #[test]
-    fn sparse_vec() {
-        let values = vec![(0, 5.0)];
-        let subject = SparseVector::from(vec![(0, 5.0)]);
-        expect!(subject.components).to(be_equal_to(values));
-    }
-
-    #[test]
     fn from() {
         let values: Vec<_> = vec![(0, 5.0)];
         let subject = SparseVector::from(values.clone());

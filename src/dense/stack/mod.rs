@@ -155,14 +155,6 @@ mod test {
     use expectest::prelude::*;
 
     #[test]
-    fn dense_vec() {
-        const VALUES: [f32; 5] = [0.0, 1.0, 0.5, 0.25, 0.125];
-        let subject = DenseVector::from([0.0, 1.0, 0.5, 0.25, 0.125]);
-        let expected = ArrayVec::from(VALUES);
-        expect!(subject.components).to(be_equal_to(expected));
-    }
-
-    #[test]
     fn from() {
         const VALUES: [f32; 5] = [0.0, 1.0, 0.5, 0.25, 0.125];
         let subject = DenseVector::from(VALUES.clone());

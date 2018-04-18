@@ -111,14 +111,6 @@ mod test {
     use expectest::prelude::*;
 
     #[test]
-    fn dense_vec() {
-        let (value, count) = (0.0, 5);
-        let values = vec![value; count];
-        let subject = DenseVector::from(vec![value; count]);
-        expect!(subject.components).to(be_equal_to(values));
-    }
-
-    #[test]
     fn from() {
         let values: Vec<_> = vec![0.0; 5];
         let subject = DenseVector::from(values.clone());
