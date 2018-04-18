@@ -1,6 +1,6 @@
 extern crate vectors;
 
-use vectors::Vector;
+use vectors::VectorExt;
 use vectors::dense::stack::DenseVector;
 use vectors::sparse::stack::SparseVector;
 

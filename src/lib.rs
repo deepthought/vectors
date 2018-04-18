@@ -6,6 +6,9 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(not(test), feature(lang_items))]
+#![cfg_attr(feature = "use-specialization", feature(specialization))]
+
+#![feature(specialization)]
 
 #[cfg(not(feature = "std"))]
 extern crate core as std;
@@ -22,6 +25,7 @@ extern crate num_traits;
 extern crate ordered_iter;
 extern crate arrayvec;
 
+// mod shared;
 
 pub mod dense;
 pub mod sparse;
@@ -54,6 +58,22 @@ pub trait Vector<Scalar>: PartialEq + VectorOps<Self, Scalar> {
     /// The type of the `Vector`'s scalar components.
     type Scalar;
 
+    // /// Calculates the dot-product between `self` and `rhs`.
+    // fn dot(&self, rhs: &Self) -> Self::Scalar;
+    //
+    // /// Calculates the squared euclidian distance between `self` and `rhs`.
+    // fn squared_distance(&self, rhs: &Self) -> Self::Scalar;
+    //
+    // /// Calculates the euclidian distance between `self` and `rhs`.
+    // fn distance(&self, rhs: &Self) -> Self::Scalar
+    // where
+    //     Self::Scalar: Real,
+    // {
+    //     self.squared_distance(rhs).sqrt()
+    // }
+}
+
+pub trait VectorExt<Scalar>: Vector<Scalar> {
     /// Calculates the dot-product between `self` and `rhs`.
     fn dot(&self, rhs: &Self) -> Self::Scalar;
 

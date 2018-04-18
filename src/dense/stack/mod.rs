@@ -12,7 +12,7 @@ use std::cmp::Ordering;
 use num_traits::{ NumAssign, MulAdd, MulAddAssign};
 use arrayvec::{Array, ArrayVec};
 
-use {Vector, VectorOps, VectorAssignOps};
+use {Vector, VectorExt, VectorOps, VectorAssignOps};
 
 mod add;
 mod sub;
@@ -118,7 +118,14 @@ where
     A: Copy + PartialEq + Array<Item = T>,
 {
     type Scalar = T;
+}
 
+impl<T, A> VectorExt<T> for DenseVector<A>
+where
+    Self: PartialEq + VectorOps<Self, T>,
+    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
+    A: Copy + PartialEq + Array<Item = T>,
+{
     fn dot(&self, rhs: &Self) -> Self::Scalar {
         self.components.iter()
             .zip(rhs.components.iter())
@@ -172,5 +179,21 @@ mod test {
         let other = DenseVector::from([0.1, 0.2, 0.3, 0.4, 0.0]);
         let dot = subject.dot(&other);
         expect!(dot).to(be_close_to(1.2));
+    }
+
+    #[test]
+    fn squared_distance() {
+        let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 4.0]);
+        let other = DenseVector::from([0.1, 0.2, 0.3, 0.4, 0.0]);
+        let squared_distance = subject.squared_distance(&other);
+        expect!(squared_distance).to(be_close_to(19.15));
+    }
+
+    #[test]
+    fn distance() {
+        let subject = DenseVector::from([0.0, 0.5, 1.0, 2.0, 4.0]);
+        let other = DenseVector::from([0.1, 0.2, 0.3, 0.4, 0.0]);
+        let distance = subject.distance(&other);
+        expect!(distance).to(be_close_to(4.376));
     }
 }

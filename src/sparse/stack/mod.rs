@@ -10,12 +10,13 @@ use std::ops::{Add, Sub, Mul, Div};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
 use std::cmp::Ordering;
 
+#[cfg(feature = "use-specialization")]
+use num_traits::Signed;
 use num_traits::{NumAssign, Zero, MulAdd, MulAddAssign};
 use ordered_iter::OrderedMapIterator;
 use arrayvec::{Array, ArrayVec};
 
-// use self::iter::OrderedMapIterable;
-use {Vector, VectorOps, VectorAssignOps};
+use {Vector, VectorExt, VectorOps, VectorAssignOps};
 
 mod add;
 mod sub;
@@ -93,25 +94,6 @@ where
     A: Array<Item = (usize, T)>,
 {}
 
-#[cfg(feature = "specialization")]
-default impl<T, A> Vector<T> for SparseVector<A>
-where
-    Self: PartialEq + VectorOps<Self, T>,
-    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
-    A: Array<Item = (usize, T)>,
-{
-    type Scalar = T;
-
-    fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot_sparse_default(self, rhs)
-    }
-
-    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
-        squared_distance_sparse_default(self, rhs)
-    }
-}
-
-#[cfg(not(feature = "specialization"))]
 impl<T, A> Vector<T> for SparseVector<A>
 where
     Self: PartialEq + VectorOps<Self, T>,
@@ -119,77 +101,53 @@ where
     A: Array<Item = (usize, T)>,
 {
     type Scalar = T;
+}
 
+#[cfg(feature = "use-specialization")]
+default impl<T, A> VectorExt<T> for SparseVector<A>
+where
+    Self: PartialEq + Vector<T, Scalar = T>,
+    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
+    A: Array<Item = (usize, T)>,
+{
     fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot_sparse_default(self, rhs)
+        dot!(T => (self, rhs))
     }
 
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
-        squared_distance_sparse_default(self, rhs)
+        squared_distance_generic!(T => (self, rhs))
     }
 }
 
-fn dot_sparse_default<T, A>(lhs: &SparseVector<A>, rhs: &SparseVector<A>) -> T
+#[cfg(not(feature = "use-specialization"))]
+impl<T, A> VectorExt<T> for SparseVector<A>
 where
-    SparseVector<A>: PartialEq + VectorOps<SparseVector<A>, T>,
+    Self: PartialEq + Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
-    let iter = rhs.iter(); //; //.ordered_map_iterator();
-    lhs.iter()
-        .inner_join_map(iter)
-        .fold(T::zero(),
-              |sum, (_, (lhs, rhs))| sum + (lhs * rhs))
+    fn dot(&self, rhs: &Self) -> Self::Scalar {
+        dot!(T => (self, rhs))
+    }
+
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
+        squared_distance_generic!(T => (self, rhs))
+    }
 }
 
-fn squared_distance_sparse_default<T, A>(lhs: &SparseVector<A>, rhs: &SparseVector<A>) -> T
+#[cfg(feature = "use-specialization")]
+impl<T, A> VectorExt<T> for SparseVector<A>
 where
-    SparseVector<A>: PartialEq + VectorOps<SparseVector<A>, T>,
-    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
-    A: Array<Item = (usize, T)>,
-{
-    let iter = rhs.iter(); //; //.ordered_map_iterator();
-    lhs.iter()
-        .inner_join_map(iter)
-        .fold(T::zero(),
-              |sum, (_, (lhs, rhs))| {
-                  // We might be dealing with an unsigned scalar type.
-                  // As such just doing `lhs - rhs` might lead to underflows:
-                  let delta = match lhs.partial_cmp(&rhs) {
-                      Some(Ordering::Less) => rhs - lhs,
-                      Some(Ordering::Equal) => T::zero(),
-                      Some(Ordering::Greater) => lhs - rhs,
-                      None => T::zero(),
-                  };
-                  sum + (delta * delta)
-              })
-}
-
-#[cfg(feature = "specialization")]
-impl<T> Vector<T> for SparseVector<A>
-where
-    Self: PartialEq + VectorOps<Self, T>,
+    Self: PartialEq + Vector<T, Scalar = T>,
     T: Copy + PartialOrd + Signed + NumAssign + MulAdd<T, T, Output = T>,
+    A: Array<Item = (usize, T)>,
 {
-    type Scalar = T;
-
     fn dot(&self, rhs: &Self) -> Self::Scalar {
-        let iter = rhs.iter(); //.ordered_map_iterator();
-        self.iter()
-            .inner_join_map(iter)
-            .fold(Self::Scalar::zero(),
-                  |sum, (_, (lhs, rhs))| sum + (lhs * rhs))
+        dot!(T => (self, rhs))
     }
 
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
-        let iter = rhs.iter(); //; //.ordered_map_iterator();
-        self.iter()
-            .inner_join_map(iter)
-            .fold(Self::Scalar::zero(),
-                  |sum, (_, (lhs, rhs))| {
-                      let delta = lhs - rhs;
-                      sum + (delta * delta)
-                  })
+        squared_distance_signed!(T => (self, rhs))
     }
 }
 
@@ -221,5 +179,21 @@ mod test {
         let other = SparseVector::from([(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)]);
         let dot = subject.dot(&other);
         expect!(dot).to(be_close_to(1.85));
+    }
+
+    #[test]
+    fn squared_distance() {
+        let subject = SparseVector::from([(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let other = SparseVector::from([(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)]);
+        let squared_distance = subject.squared_distance(&other);
+        expect!(squared_distance).to(be_close_to(13.76));
+    }
+
+    #[test]
+    fn distance() {
+        let subject = SparseVector::from([(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let other = SparseVector::from([(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)]);
+        let distance = subject.distance(&other);
+        expect!(distance).to(be_close_to(3.71));
     }
 }
