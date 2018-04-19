@@ -36,9 +36,9 @@ where
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {
-                        (Some(l), Some(r)) => l + r,
-                        (Some(l), None) => l,
-                        (None, Some(r)) => r,
+                        (Some(l), Some(r)) => l.add(r),
+                        (Some(l), None) => l.add(T::zero()),
+                        (None, Some(r)) => T::zero().add(r),
                         _ => unreachable!(),
                     };
                     if value.is_zero() {

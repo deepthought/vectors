@@ -34,9 +34,9 @@ where
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {
-                        (Some(l), Some(r)) => l - r,
-                        (Some(l), None) => l,
-                        (None, Some(r)) => r,
+                        (Some(l), Some(r)) => l.sub(r),
+                        (Some(l), None) => l.sub(T::zero()),
+                        (None, Some(r)) => T::zero().sub(r),
                         _ => unreachable!(),
                     };
                     if value.is_zero() {
@@ -58,27 +58,27 @@ mod test {
 
     #[test]
     fn sub() {
-        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.6), (2, 1.2), (3, 0.3), (4, 2.0), (5, 4.4)]);
+        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.6), (2, 1.2), (4, 2.0), (5, 0.4)]);
         let other = SparseVector::from(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4)]);
-        let expected = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let expected = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (3, -0.3), (4, 2.0)]);
         let result = subject - other;
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
     fn sub_ref() {
-        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.6), (2, 1.2), (3, 0.3), (4, 2.0), (5, 4.4)]);
+        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.6), (2, 1.2), (4, 2.0), (5, 0.4)]);
         let other = SparseVector::from(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4)]);
-        let expected = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let expected = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (3, -0.3), (4, 2.0)]);
         let result = subject - &other;
         expect!(result).to(be_equal_to(expected));
     }
 
     #[test]
     fn sub_assign() {
-        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.6), (2, 1.2), (3, 0.3), (4, 2.0), (5, 4.4)]);
+        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.6), (2, 1.2), (4, 2.0), (5, 0.4)]);
         let other = SparseVector::from(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4)]);
-        let expected = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
+        let expected = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (3, -0.3), (4, 2.0)]);
 
         let mut result = subject;
         result -= &other;
