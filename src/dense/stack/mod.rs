@@ -98,30 +98,30 @@ impl<V, T, A> VectorOps<V, T> for DenseVector<A>
 where
     Self: Add<V, Output = Self> + Sub<V, Output = Self> + Mul<T, Output = Self> + Div<T, Output = Self> + MulAdd<T, V, Output = Self>,
     T: Copy + NumAssign + MulAdd<T, T, Output = T>,
-    A: Copy + PartialEq + Array<Item = T>,
+    A: Copy + Array<Item = T>,
 {}
 
 impl<V, T, A> VectorAssignOps<V, T> for DenseVector<A>
 where
     Self: AddAssign<V> + SubAssign<V> + MulAssign<T> + DivAssign<T> + MulAddAssign<T, V>,
     T: Copy + NumAssign + MulAddAssign,
-    A: Copy + PartialEq + Array<Item = T>,
+    A: Copy + Array<Item = T>,
 {}
 
 impl<T, A> Vector<T> for DenseVector<A>
 where
-    Self: PartialEq + VectorOps<Self, T>,
-    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
-    A: Copy + PartialEq + Array<Item = T>,
+    Self: VectorOps<Self, T>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
+    A: Copy + Array<Item = T>,
 {
     type Scalar = T;
 }
 
 impl<T, A> VectorExt<T> for DenseVector<A>
 where
-    Self: PartialEq + Vector<T, Scalar = T>,
+    Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
-    A: Copy + PartialEq + Array<Item = T>,
+    A: Copy + Array<Item = T>,
 {
     fn dot(&self, rhs: &Self) -> Self::Scalar {
         self.components.iter()

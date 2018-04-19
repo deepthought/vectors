@@ -20,7 +20,6 @@ where
 
 impl<T, A> IntoIterator for SparseVector<A>
 where
-    T: Copy,
     A: Array<Item = (usize, T)>,
 {
     type Item = <Self::IntoIter as Iterator>::Item;

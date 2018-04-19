@@ -73,7 +73,7 @@ where
 
 impl<T> Vector<T> for SparseVector<T>
 where
-    Self: PartialEq + VectorOps<Self, T>,
+    Self: VectorOps<Self, T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
 {
     type Scalar = T;
@@ -82,7 +82,7 @@ where
 #[cfg(feature = "use-specialization")]
 default impl<T> VectorExt<T> for SparseVector<T>
 where
-    Self: PartialEq + Vector<T, Scalar = T>,
+    Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
 {
     fn dot(&self, rhs: &Self) -> Self::Scalar {
@@ -97,7 +97,7 @@ where
 #[cfg(not(feature = "use-specialization"))]
 impl<T> VectorExt<T> for SparseVector<T>
 where
-    Self: PartialEq + Vector<T, Scalar = T>,
+    Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
 {
     fn dot(&self, rhs: &Self) -> Self::Scalar {
@@ -112,8 +112,8 @@ where
 #[cfg(feature = "use-specialization")]
 impl<T> VectorExt<T> for SparseVector<T>
 where
-    Self: PartialEq + Vector<T, Scalar = T>,
-    T: Copy + PartialOrd + Signed + NumAssign + MulAdd<T, T, Output = T>,
+    Self: Vector<T, Scalar = T>,
+    T: Copy + Signed + NumAssign + MulAdd<T, T, Output = T>,
 {
     fn dot(&self, rhs: &Self) -> Self::Scalar {
         dot!(T => (self, rhs))

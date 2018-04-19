@@ -68,15 +68,15 @@ where
 
 impl<T> Vector<T> for DenseVector<T>
 where
-    Self: PartialEq + VectorOps<Self, T>,
-    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
+    Self: VectorOps<Self, T>,
+    T: Copy + NumAssign + MulAdd<T, T, Output = T>,
 {
     type Scalar = T;
 }
 
 impl<T> VectorExt<T> for DenseVector<T>
 where
-    Self: PartialEq + Vector<T, Scalar = T>,
+    Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
 {
     fn dot(&self, rhs: &Self) -> Self::Scalar {

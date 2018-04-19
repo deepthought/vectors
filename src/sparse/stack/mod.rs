@@ -104,7 +104,7 @@ where
 
 impl<T, A> Vector<T> for SparseVector<A>
 where
-    Self: PartialEq + VectorOps<Self, T>,
+    Self: VectorOps<Self, T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
@@ -114,7 +114,7 @@ where
 #[cfg(feature = "use-specialization")]
 default impl<T, A> VectorExt<T> for SparseVector<A>
 where
-    Self: PartialEq + Vector<T, Scalar = T>,
+    Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
@@ -130,7 +130,7 @@ where
 #[cfg(not(feature = "use-specialization"))]
 impl<T, A> VectorExt<T> for SparseVector<A>
 where
-    Self: PartialEq + Vector<T, Scalar = T>,
+    Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {
@@ -146,7 +146,7 @@ where
 #[cfg(feature = "use-specialization")]
 impl<T, A> VectorExt<T> for SparseVector<A>
 where
-    Self: PartialEq + Vector<T, Scalar = T>,
+    Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + Signed + NumAssign + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
 {

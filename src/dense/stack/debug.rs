@@ -6,7 +6,7 @@ use super::*;
 
 impl<T, A> fmt::Debug for DenseVector<A>
 where
-    T: Copy + fmt::Debug,
+    T: fmt::Debug,
     A: Array<Item = T>,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

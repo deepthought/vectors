@@ -20,7 +20,6 @@ where
 
 impl<T, A> IntoIterator for DenseVector<A>
 where
-    T: Copy,
     A: Array<Item = T>,
 {
     type Item = <Self::IntoIter as Iterator>::Item;
