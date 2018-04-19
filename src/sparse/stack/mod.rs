@@ -53,7 +53,7 @@ where
 
     #[inline]
     pub fn iter<'a>(&'a self) -> Iter<'a, T> {
-        Iter::new(self.components.iter())
+        Iter::new(&self.components[..])
     }
 }
 

@@ -4,7 +4,7 @@
 
 use super::*;
 
-use ordered_iter::OrderedMapIterator;
+pub use sparse::iter::{IntoIter, Iter};
 
 impl<T> FromIterator<(usize, T)> for SparseVector<T> {
     #[inline]
@@ -15,12 +15,12 @@ impl<T> FromIterator<(usize, T)> for SparseVector<T> {
 }
 
 impl<T> IntoIterator for SparseVector<T> {
-    type Item = <Self::IntoIter as IntoIterator>::Item;
-    type IntoIter = IntoIter<T>;
+    type Item = <Self::IntoIter as Iterator>::Item;
+    type IntoIter = IntoIter<Vec<(usize, T)>>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        IntoIter::new(self.components.into_iter())
+        IntoIter::new(self.components)
     }
 }
 
@@ -33,84 +33,8 @@ where
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        Iter::new((&self.components[..]).into_iter())
+        Iter::new(&self.components[..])
     }
-}
-
-pub struct IntoIter<T> {
-    inner: <Vec<(usize, T)> as IntoIterator>::IntoIter,
-}
-
-impl<T> IntoIter<T> {
-    #[inline]
-    pub fn new(iter: <Vec<(usize, T)> as IntoIterator>::IntoIter) -> Self {
-        IntoIter { inner: iter }
-    }
-}
-
-impl<T> Iterator for IntoIter<T> {
-    type Item = (usize, T);
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next()
-    }
-}
-
-impl<T> ExactSizeIterator for IntoIter<T> {
-    #[inline]
-    fn len(&self) -> usize {
-        self.inner.len()
-    }
-}
-
-impl<T> OrderedMapIterator for IntoIter<T> {
-    type Key = usize;
-    type Val = T;
-}
-
-pub struct Iter<'a, T>
-where
-    T: 'a
-{
-    inner: <&'a [(usize, T)] as IntoIterator>::IntoIter,
-}
-
-impl<'a, T> Iter<'a, T> {
-    #[inline]
-    pub fn new(iter: <&'a [(usize, T)] as IntoIterator>::IntoIter) -> Self {
-        Iter { inner: iter }
-    }
-}
-
-impl<'a, T> Iterator for Iter<'a, T>
-where
-    T: Copy
-{
-    type Item = (usize, T);
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|i| *i)
-    }
-}
-
-impl<'a, T> ExactSizeIterator for Iter<'a, T>
-where
-    T: Copy
-{
-    #[inline]
-    fn len(&self) -> usize {
-        self.inner.len()
-    }
-}
-
-impl<'a, T> OrderedMapIterator for Iter<'a, T>
-where
-    T: Copy
-{
-    type Key = usize;
-    type Val = T;
 }
 
 #[cfg(test)]

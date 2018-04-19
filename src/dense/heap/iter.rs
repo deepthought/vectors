@@ -4,6 +4,8 @@
 
 use super::*;
 
+pub use dense::iter::{IntoIter, Iter};
+
 impl<T> FromIterator<T> for DenseVector<T> {
     #[inline]
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
@@ -13,12 +15,12 @@ impl<T> FromIterator<T> for DenseVector<T> {
 }
 
 impl<T> IntoIterator for DenseVector<T> {
-    type Item = <Self::IntoIter as IntoIterator>::Item;
-    type IntoIter = IntoIter<T>;
+    type Item = <Self::IntoIter as Iterator>::Item;
+    type IntoIter = IntoIter<Vec<T>>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        IntoIter::new(self.components.into_iter())
+        IntoIter::new(self.components)
     }
 }
 
@@ -31,95 +33,7 @@ where
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        Iter::new((&self.components[..]).into_iter())
-    }
-}
-
-pub struct IntoIter<T> {
-    index: usize,
-    inner: <Vec<T> as IntoIterator>::IntoIter,
-}
-
-impl<T> IntoIter<T> {
-    pub fn new(iter: <Vec<T> as IntoIterator>::IntoIter) -> Self {
-        IntoIter { index: 0, inner: iter }
-    }
-}
-
-impl<T> Iterator for IntoIter<T> {
-    type Item = (usize, T);
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        let index = self.index;
-        if let Some(value) = self.inner.next() {
-            self.index += 1;
-            Some((index, value))
-        } else {
-            None
-        }
-    }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.inner.size_hint()
-    }
-}
-
-impl<T> ExactSizeIterator for IntoIter<T> {
-    #[inline]
-    fn len(&self) -> usize {
-        self.inner.len()
-    }
-}
-
-pub struct Iter<'a, T>
-where
-    T: 'a
-{
-    index: usize,
-    inner: <&'a [T] as IntoIterator>::IntoIter,
-}
-
-impl<'a, T> Iter<'a, T>
-where
-    T: 'a
-{
-    pub fn new(iter: <&'a [T] as IntoIterator>::IntoIter) -> Self {
-        Iter { index: 0, inner: iter }
-    }
-}
-
-impl<'a, T> Iterator for Iter<'a, T>
-where
-    T: Copy
-{
-    type Item = (usize, T);
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        let index = self.index;
-        if let Some(value) = self.inner.next() {
-            self.index += 1;
-            Some((index, *value))
-        } else {
-            None
-        }
-    }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.inner.size_hint()
-    }
-}
-
-impl<'a, T> ExactSizeIterator for Iter<'a, T>
-where
-    T: Copy
-{
-    #[inline]
-    fn len(&self) -> usize {
-        self.inner.len()
+        Iter::new(&self.components[..])
     }
 }
 
