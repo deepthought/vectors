@@ -6,52 +6,33 @@ use super::*;
 
 use ordered_iter::OrderedMapIterator;
 
-impl<T, A> MulAdd<T, SparseVector<A>> for SparseVector<A>
+impl<T, A, V> MulAdd<T, V> for SparseVector<A>
 where
     T: Copy + Zero + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
+    V: IntoIterator<Item=(usize, T)>,
+    <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
-    type Output = SparseVector<A>;
+    type Output = Self;
 
     #[inline]
-    fn mul_add(self, a: T, b: SparseVector<A>) -> Self::Output {
-        self.mul_add(a, &b)
-    }
-}
-
-impl<'a, T, A> MulAdd<T, &'a SparseVector<A>> for SparseVector<A>
-where
-    T: Copy + Zero + MulAdd<T, T, Output = T>,
-    A: Array<Item = (usize, T)>,
-{
-    type Output = SparseVector<A>;
-
-    #[inline]
-    fn mul_add(mut self, a: T, b: &'a SparseVector<A>) -> Self::Output {
+    fn mul_add(mut self, a: T, b: V) -> Self::Output {
         self.mul_add_assign(a, b);
         self
     }
 }
 
-impl<T, A> MulAddAssign<T, SparseVector<A>> for SparseVector<A>
+impl<T, A, V> MulAddAssign<T, V> for SparseVector<A>
 where
     T: Copy + Zero + MulAdd<T, T, Output = T>,
     A: Array<Item = (usize, T)>,
+    V: IntoIterator<Item=(usize, T)>,
+    <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
     #[inline]
-    fn mul_add_assign(&mut self, a: T, b: SparseVector<A>) {
-        self.mul_add_assign(a, &b)
-    }
-}
-
-impl<'a, T, A> MulAddAssign<T, &'a SparseVector<A>> for SparseVector<A>
-where
-    T: Copy + Zero + MulAdd<T, T, Output = T>,
-    A: Array<Item = (usize, T)>,
-{
-    fn mul_add_assign(&mut self, a: T, b: &'a SparseVector<A>) {
+    fn mul_add_assign(&mut self, a: T, b: V) {
         self.components = {
-            let iter = (&b).into_iter();
+            let iter = b.into_iter();
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {

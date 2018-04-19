@@ -6,48 +6,31 @@ use super::*;
 
 use ordered_iter::OrderedMapIterator;
 
-impl<T> Sub<SparseVector<T>> for SparseVector<T>
+impl<T, V> Sub<V> for SparseVector<T>
 where
     T: Copy + Zero + Sub<T, Output = T>,
+    V: IntoIterator<Item=(usize, T)>,
+    <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
-    type Output = SparseVector<T>;
+    type Output = Self;
 
     #[inline]
-    fn sub(self, rhs: SparseVector<T>) -> Self::Output {
-        self.sub(&rhs)
-    }
-}
-
-impl<'a, T> Sub<&'a SparseVector<T>> for SparseVector<T>
-where
-    T: Copy + Zero + Sub<T, Output = T>,
-{
-    type Output = SparseVector<T>;
-
-    #[inline]
-    fn sub(mut self, rhs: &'a SparseVector<T>) -> Self::Output {
+    fn sub(mut self, rhs: V) -> Self::Output {
         self.sub_assign(rhs);
         self
     }
 }
 
-impl<T> SubAssign<SparseVector<T>> for SparseVector<T>
+impl<T, V> SubAssign<V> for SparseVector<T>
 where
     T: Copy + Zero + Sub<T, Output = T>,
+    V: IntoIterator<Item=(usize, T)>,
+    <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
     #[inline]
-    fn sub_assign(&mut self, rhs: SparseVector<T>) {
-        self.sub_assign(&rhs)
-    }
-}
-
-impl<'a, T> SubAssign<&'a SparseVector<T>> for SparseVector<T>
-where
-    T: Copy + Zero + Sub<T, Output = T>,
-{
-    fn sub_assign(&mut self, rhs: &'a SparseVector<T>) {
+    fn sub_assign(&mut self, rhs: V) {
         self.components = {
-            let iter = (&rhs).into_iter();
+            let iter = rhs.into_iter();
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {

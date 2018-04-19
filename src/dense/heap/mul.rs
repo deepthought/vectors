@@ -8,7 +8,7 @@ impl<T> Mul<T> for DenseVector<T>
 where
     T: Copy + MulAssign<T>,
 {
-    type Output = DenseVector<T>;
+    type Output = Self;
 
     #[inline]
     fn mul(mut self, rhs: T) -> Self::Output {

@@ -4,52 +4,33 @@
 
 use super::*;
 
-impl<T, A> Add<DenseVector<A>> for DenseVector<A>
+impl<T, A, V> Add<V> for DenseVector<A>
 where
     T: Copy + AddAssign<T>,
     A: Array<Item = T>,
+    V: IntoIterator<Item=(usize, T)>,
+    <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
-    type Output = DenseVector<A>;
+    type Output = Self;
 
     #[inline]
-    fn add(self, rhs: Self) -> Self::Output {
-        self.add(&rhs)
-    }
-}
-
-impl<'a, T, A> Add<&'a DenseVector<A>> for DenseVector<A>
-where
-    T: Copy + AddAssign<T>,
-    A: Array<Item = T>,
-{
-    type Output = DenseVector<A>;
-
-    #[inline]
-    fn add(mut self, rhs: &'a Self) -> Self::Output {
+    fn add(mut self, rhs: V) -> Self::Output {
         self.add_assign(rhs);
         self
     }
 }
 
-impl<T, A> AddAssign<DenseVector<A>> for DenseVector<A>
+impl<T, A, V> AddAssign<V> for DenseVector<A>
 where
     T: Copy + AddAssign<T>,
     A: Array<Item = T>,
+    V: IntoIterator<Item=(usize, T)>,
+    <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     #[inline]
-    fn add_assign(&mut self, rhs: Self) {
-        self.add_assign(&rhs)
-    }
-}
-
-impl<'a, T, A> AddAssign<&'a DenseVector<A>> for DenseVector<A>
-where
-    T: Copy + AddAssign<T>,
-    A: Array<Item = T>,
-{
-    fn add_assign(&mut self, rhs: &'a Self) {
-        assert_eq!(self.len(), rhs.len());
-        let iter = (&rhs).into_iter();
+    fn add_assign(&mut self, rhs: V) {
+        let iter = rhs.into_iter();
+        assert_eq!(self.len(), iter.len());
         for (lhs, (_, rhs)) in self.components.iter_mut().zip(iter) {
             *lhs += rhs;
         }

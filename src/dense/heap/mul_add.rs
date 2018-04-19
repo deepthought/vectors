@@ -4,48 +4,31 @@
 
 use super::*;
 
-impl<T> MulAdd<T, DenseVector<T>> for DenseVector<T>
+impl<T, V> MulAdd<T, V> for DenseVector<T>
 where
     T: Copy + MulAddAssign<T, T>,
+    V: IntoIterator<Item=(usize, T)>,
+    <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
-    type Output = DenseVector<T>;
+    type Output = Self;
 
     #[inline]
-    fn mul_add(self, a: T, b: Self) -> Self::Output {
-        self.mul_add(a, &b)
-    }
-}
-
-impl<'a, T> MulAdd<T, &'a DenseVector<T>> for DenseVector<T>
-where
-    T: Copy + MulAddAssign<T, T>,
-{
-    type Output = DenseVector<T>;
-
-    #[inline]
-    fn mul_add(mut self, a: T, b: &'a Self) -> Self::Output {
+    fn mul_add(mut self, a: T, b: V) -> Self::Output {
         self.mul_add_assign(a, b);
         self
     }
 }
 
-impl<T> MulAddAssign<T, DenseVector<T>> for DenseVector<T>
+impl<T, V> MulAddAssign<T, V> for DenseVector<T>
 where
     T: Copy + MulAddAssign<T, T>,
+    V: IntoIterator<Item=(usize, T)>,
+    <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     #[inline]
-    fn mul_add_assign(&mut self, a: T, b: Self) {
-        self.mul_add_assign(a, &b)
-    }
-}
-
-impl<'a, T> MulAddAssign<T, &'a DenseVector<T>> for DenseVector<T>
-where
-    T: Copy + MulAddAssign<T, T>,
-{
-    fn mul_add_assign(&mut self, a: T, b: &'a Self) {
-        assert_eq!(self.len(), b.len());
-        let iter = (&b).into_iter();
+    fn mul_add_assign(&mut self, a: T, b: V) {
+        let iter = b.into_iter();
+        assert_eq!(self.len(), iter.len());
         for (lhs, (_, rhs)) in self.components.iter_mut().zip(iter) {
             lhs.mul_add_assign(a, rhs);
         }

@@ -8,7 +8,7 @@ impl<T> Div<T> for DenseVector<T>
 where
     T: Copy + DivAssign<T>,
 {
-    type Output = DenseVector<T>;
+    type Output = Self;
 
     #[inline]
     fn div(mut self, rhs: T) -> Self::Output {
