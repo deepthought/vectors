@@ -81,22 +81,22 @@ where
 {
     fn dot(&self, rhs: &Self) -> Self::Scalar {
         self.components.iter()
-            .zip(rhs.components.iter())
+            .zip((&rhs).into_iter())
             .fold(T::zero(),
-                  |sum, (lhs, rhs)| sum + ((*lhs) * (*rhs)))
+                  |sum, (lhs, (_, rhs))| sum + ((*lhs) * rhs))
     }
 
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
         self.components.iter()
-            .zip(rhs.components.iter())
+            .zip((&rhs).into_iter())
             .fold(T::zero(),
-                  |sum, (lhs, rhs)| {
+                  |sum, (lhs, (_, rhs))| {
                       // We might be dealing with an unsigned scalar type.
                       // As such just doing `lhs - rhs` might lead to underfows:
-                      let delta = match lhs.partial_cmp(rhs) {
-                          Some(Ordering::Less) => (*rhs) - (*lhs),
+                      let delta = match lhs.partial_cmp(&rhs) {
+                          Some(Ordering::Less) => rhs - (*lhs),
                           Some(Ordering::Equal) => T::zero(),
-                          Some(Ordering::Greater) => (*lhs) - (*rhs),
+                          Some(Ordering::Greater) => (*lhs) - rhs,
                           None => T::zero(),
                       };
                       sum + (delta * delta)

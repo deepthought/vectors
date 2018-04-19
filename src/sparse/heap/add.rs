@@ -47,7 +47,7 @@ where
 {
     fn add_assign(&mut self, rhs: &'a SparseVector<T>) {
         self.components = {
-            let iter = rhs.iter();
+            let iter = (&rhs).into_iter();
             let outer_join = self.iter().outer_join(iter);
             outer_join.filter_map(|(index, (lhs, rhs))| {
                     let value = match (lhs, rhs) {

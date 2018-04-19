@@ -45,7 +45,7 @@ where
 {
     fn mul_add_assign(&mut self, a: T, b: &'a Self) {
         assert_eq!(self.len(), b.len());
-        let iter = b.iter();
+        let iter = (&b).into_iter();
         for (lhs, (_, rhs)) in self.components.iter_mut().zip(iter) {
             lhs.mul_add_assign(a, rhs);
         }
