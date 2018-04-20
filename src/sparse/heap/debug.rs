@@ -2,7 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-use super::*;
+use std::fmt;
+
+use super::SparseVector;
 
 impl<T> fmt::Debug for SparseVector<T>
 where

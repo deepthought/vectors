@@ -1,6 +1,4 @@
-use std::ops::{Add, Mul};
-
-use num_traits::{Zero, Signed};
+use num_traits::Signed;
 use ordered_iter::OrderedMapIterator;
 
 use Distance;
@@ -9,7 +7,7 @@ use super::SparseVector;
 impl<'a, T, V, I, J> Distance<V> for &'a SparseVector<T>
 where
     Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
-    T: Copy + Signed + Add<T, Output = T> + Mul<T, Output = T> + Zero,
+    T: Copy + Signed,
     V: IntoIterator<IntoIter = J, Item = (usize, T)>,
     I: OrderedMapIterator<Key = usize, Val = T>,
     J: OrderedMapIterator<Key = usize, Val = T>,
