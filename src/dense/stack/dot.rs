@@ -1,4 +1,5 @@
 use num_traits::Num;
+
 use arrayvec::Array;
 
 use Dot;

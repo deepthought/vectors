@@ -1,5 +1,6 @@
-use arrayvec::Array;
 use num_traits::Signed;
+
+use arrayvec::Array;
 
 use Distance;
 use super::DenseVector;
