@@ -1,3 +1,5 @@
+use ordered_iter::OrderedMapIterator;
+
 pub struct IntoIter<I>
 where
     I: IntoIterator,
@@ -49,6 +51,14 @@ where
     }
 }
 
+impl<T, I> OrderedMapIterator for IntoIter<I>
+where
+    I: IntoIterator<Item = T>,
+{
+    type Key = usize;
+    type Val = T;
+}
+
 pub struct Iter<'a, T>
 where
     T: 'a
@@ -92,6 +102,14 @@ where
     fn len(&self) -> usize {
         self.inner.len()
     }
+}
+
+impl<'a, T> OrderedMapIterator for Iter<'a, T>
+where
+    T: Copy
+{
+    type Key = usize;
+    type Val = T;
 }
 
 #[cfg(test)]
