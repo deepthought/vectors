@@ -117,6 +117,23 @@ where
     type Scalar = T;
 }
 
+#[cfg(feature = "use-specialization")]
+default impl<T, A> VectorExt<T> for DenseVector<A>
+where
+    Self: Vector<T, Scalar = T>,
+    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
+    A: Copy + Array<Item = T>,
+{
+    fn dot(&self, rhs: &Self) -> Self::Scalar {
+        dot!(T => (self, rhs))
+    }
+
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
+        squared_distance_generic!(T => (self, rhs))
+    }
+}
+
+#[cfg(not(feature = "use-specialization"))]
 impl<T, A> VectorExt<T> for DenseVector<A>
 where
     Self: Vector<T, Scalar = T>,
@@ -124,27 +141,27 @@ where
     A: Copy + Array<Item = T>,
 {
     fn dot(&self, rhs: &Self) -> Self::Scalar {
-        self.components.iter()
-            .zip((&rhs).into_iter())
-            .fold(T::zero(),
-                  |sum, (lhs, (_, rhs))| sum + ((*lhs) * rhs))
+        dot!(T => (self, rhs))
     }
 
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
-        self.components.iter()
-            .zip((&rhs).into_iter())
-            .fold(T::zero(),
-                  |sum, (lhs, (_, rhs))| {
-                      // We might be dealing with an unsigned scalar type.
-                      // As such just doing `lhs - rhs` might lead to underfows:
-                      let delta = match lhs.partial_cmp(&rhs) {
-                          Some(Ordering::Less) => rhs - (*lhs),
-                          Some(Ordering::Equal) => T::zero(),
-                          Some(Ordering::Greater) => (*lhs) - rhs,
-                          None => T::zero(),
-                      };
-                      sum + (delta * delta)
-                  })
+        squared_distance_generic!(T => (self, rhs))
+    }
+}
+
+#[cfg(feature = "use-specialization")]
+impl<T, A> VectorExt<T> for DenseVector<A>
+where
+    Self: Vector<T, Scalar = T>,
+    T: Copy + Signed + NumAssign + MulAdd<T, T, Output = T>,
+    A: Copy + Array<Item = T>,
+{
+    fn dot(&self, rhs: &Self) -> Self::Scalar {
+        dot!(T => (self, rhs))
+    }
+
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
+        squared_distance_signed!(T => (self, rhs))
     }
 }
 
