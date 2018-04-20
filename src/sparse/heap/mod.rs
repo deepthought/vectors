@@ -8,15 +8,10 @@ use std::fmt;
 use std::iter::{IntoIterator, FromIterator};
 use std::ops::{Add, Sub, Mul, Div};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
-use std::cmp::Ordering;
 
-#[cfg(feature = "use-specialization")]
-use num_traits::Signed;
 use num_traits::{NumAssign, Zero, MulAdd, MulAddAssign};
 
-use ordered_iter::OrderedMapIterator;
-
-use {Vector, VectorExt, VectorOps, VectorAssignOps, Dot};
+use {Vector, VectorOps, VectorAssignOps};
 
 mod add;
 mod sub;
@@ -25,6 +20,7 @@ mod div;
 mod mul_add;
 
 mod dot;
+mod distance;
 
 mod debug;
 mod iter;
@@ -81,39 +77,6 @@ where
     type Scalar = T;
 }
 
-#[cfg(feature = "use-specialization")]
-default impl<T> VectorExt<T> for SparseVector<T>
-where
-    Self: Vector<T, Scalar = T>,
-    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
-{
-    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
-        squared_distance_generic!(T => (self, rhs))
-    }
-}
-
-#[cfg(not(feature = "use-specialization"))]
-impl<T> VectorExt<T> for SparseVector<T>
-where
-    Self: Vector<T, Scalar = T>,
-    T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
-{
-    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
-        squared_distance_generic!(T => (self, rhs))
-    }
-}
-
-#[cfg(feature = "use-specialization")]
-impl<T> VectorExt<T> for SparseVector<T>
-where
-    Self: Vector<T, Scalar = T>,
-    T: Copy + Signed + NumAssign + MulAdd<T, T, Output = T>,
-{
-    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
-        squared_distance_signed!(T => (self, rhs))
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -125,21 +88,5 @@ mod test {
         let values: Vec<_> = vec![(0, 5.0)];
         let subject = SparseVector::from(values.clone());
         expect!(subject.components).to(be_equal_to(values));
-    }
-
-    #[test]
-    fn squared_distance() {
-        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
-        let other = SparseVector::from(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)]);
-        let squared_distance = subject.squared_distance(&other);
-        expect!(squared_distance).to(be_close_to(13.76));
-    }
-
-    #[test]
-    fn distance() {
-        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
-        let other = SparseVector::from(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)]);
-        let distance = subject.distance(&other);
-        expect!(distance).to(be_close_to(3.71));
     }
 }

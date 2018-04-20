@@ -10,7 +10,7 @@ impl<T, A, V> Sub<V> for SparseVector<A>
 where
     T: Copy + Zero + Sub<T, Output = T>,
     A: Array<Item = (usize, T)>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
     type Output = Self;
@@ -26,7 +26,7 @@ impl<T, A, V> SubAssign<V> for SparseVector<A>
 where
     T: Copy + Zero + Sub<T, Output = T>,
     A: Array<Item = (usize, T)>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
     #[inline]

@@ -9,7 +9,7 @@ use ordered_iter::OrderedMapIterator;
 impl<T, V> MulAdd<T, V> for SparseVector<T>
 where
     T: Copy + Zero + MulAdd<T, T, Output = T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
     type Output = Self;
@@ -24,7 +24,7 @@ where
 impl<T, V> MulAddAssign<T, V> for SparseVector<T>
 where
     T: Copy + Zero + MulAdd<T, T, Output = T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
     #[inline]

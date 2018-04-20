@@ -7,7 +7,7 @@ use super::*;
 impl<T, V> MulAdd<T, V> for DenseVector<T>
 where
     T: Copy + MulAddAssign<T, T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     type Output = Self;
@@ -22,7 +22,7 @@ where
 impl<T, V> MulAddAssign<T, V> for DenseVector<T>
 where
     T: Copy + MulAddAssign<T, T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     #[inline]

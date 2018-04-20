@@ -1,38 +1,22 @@
-macro_rules! dot {
-    ($scalar:ident => ($lhs:expr, $rhs:expr)) => {
-        $lhs.iter()
-          .zip($rhs.into_iter())
-          .fold($scalar::zero(),
-                |sum, ((_, lhs), (_, rhs))| sum + (lhs * rhs))
-    }
-}
-
-macro_rules! squared_distance_generic {
-    ($scalar:ident => ($lhs:expr, $rhs:expr)) => {
-        $lhs.iter()
-            .zip($rhs.into_iter())
-            .fold($scalar::zero(),
-                  |sum, ((_, lhs), (_, rhs))| {
-                      // We might be dealing with an unsigned scalar type.
-                      // As such just doing `lhs - rhs` might lead to underfows:
-                      let delta = match lhs.partial_cmp(&rhs) {
-                          Some(Ordering::Less) => rhs - lhs,
-                          Some(Ordering::Equal) => $scalar::zero(),
-                          Some(Ordering::Greater) => lhs - rhs,
-                          None => $scalar::zero(),
-                      };
-                      sum + (delta * delta)
-                  })
-    }
-}
-
-#[cfg(feature = "use-specialization")]
-macro_rules! squared_distance_signed {
+macro_rules! dot_dense {
     ($scalar:ident => ($lhs:expr, $rhs:expr)) => {
         $lhs.into_iter()
-            .inner_join_map($rhs.into_iter())
+          .zip($rhs.into_iter())
+          .fold($scalar::zero(),
+          |sum, ((lhs_i, lhs), (rhs_i, rhs))| {
+              debug_assert_eq!(lhs_i, rhs_i);
+              sum + (lhs * rhs)
+          })
+    }
+}
+
+macro_rules! squared_distance_dense {
+    ($scalar:ident => ($lhs:expr, $rhs:expr)) => {
+        $lhs.into_iter()
+            .zip($rhs.into_iter())
             .fold($scalar::zero(),
-                  |sum, (_, (lhs, rhs))| {
+                  |sum, ((lhs_i, lhs), (rhs_i, rhs))| {
+                      debug_assert_eq!(lhs_i, rhs_i);
                       let delta = lhs - rhs;
                       sum + (delta * delta)
                   })

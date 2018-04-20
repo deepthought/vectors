@@ -6,9 +6,6 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(not(test), feature(lang_items))]
-#![cfg_attr(feature = "use-specialization", feature(specialization))]
-
-#![feature(specialization)]
 
 #[cfg(not(feature = "std"))]
 extern crate core as std;
@@ -37,7 +34,7 @@ use num_traits::{MulAdd, MulAddAssign, real::Real};
 pub mod prelude {
     pub use super::{
         VectorOps, VectorAssignOps,
-        Vector, VectorExt, VectorRef,
+        Vector, VectorRef,
         VectorAssign, VectorAssignRef,
         Dot, Distance
     };
@@ -52,7 +49,7 @@ pub trait VectorOps<Vector, Scalar>: Sized
     + MulAdd<Scalar, Vector, Output = Self>
 {}
 
-/// The trait for vector types implementing numeric assignment operators (like `+=`).
+/// The trait for vector types implementing numeric assignment operators (like `+ = `).
 pub trait VectorAssignOps<Vector, Scalar>: Sized
     + AddAssign<Vector>
     + SubAssign<Vector>
@@ -82,19 +79,6 @@ pub trait Vector<Scalar>: PartialEq + VectorOps<Self, Scalar> {
     // }
 }
 
-pub trait VectorExt<Scalar>: Vector<Scalar> {
-    /// Calculates the squared euclidian distance between `self` and `rhs`.
-    fn squared_distance(&self, rhs: &Self) -> Self::Scalar;
-
-    /// Calculates the euclidian distance between `self` and `rhs`.
-    fn distance(&self, rhs: &Self) -> Self::Scalar
-    where
-        Self::Scalar: Real,
-    {
-        self.squared_distance(rhs).sqrt()
-    }
-}
-
 /// The trait for `Vector` types which also implement numeric operations
 // taking the second operand by reference.
 pub trait VectorRef<Scalar>: Vector<Scalar> + for<'a> VectorOps<&'a Self, Scalar> { }
@@ -121,21 +105,21 @@ where
     T: VectorAssign<S> + for<'a> VectorAssignOps<&'a T, S>
 {}
 
-pub trait Dot<Rhs = Self> {
+pub trait Dot<Rhs = Self>: Sized {
     type Scalar;
 
     /// Calculates the dot-product between `self` and `rhs`.
     fn dot(self, rhs: Rhs) -> Self::Scalar;
 }
 
-pub trait Distance<Rhs = Self> {
+pub trait Distance<Rhs = Self>: Sized {
     type Scalar;
 
     /// Calculates the squared euclidian distance between `self` and `rhs`.
-    fn squared_distance(&self, rhs: Rhs) -> Self::Scalar;
+    fn squared_distance(self, rhs: Rhs) -> Self::Scalar;
 
     /// Calculates the euclidian distance between `self` and `rhs`.
-    fn distance(&self, rhs: Rhs) -> Self::Scalar
+    fn distance(self, rhs: Rhs) -> Self::Scalar
     where
         Self::Scalar: Real,
     {

@@ -7,7 +7,7 @@ use super::*;
 impl<T, V> Sub<V> for DenseVector<T>
 where
     T: Copy + SubAssign<T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     type Output = Self;
@@ -22,7 +22,7 @@ where
 impl<T, V> SubAssign<V> for DenseVector<T>
 where
     T: Copy + SubAssign<T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     #[inline]

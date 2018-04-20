@@ -30,4 +30,3 @@ expectest = "0.6.0"
 [features]
 default = ["std"]
 std = []
-use-specialization = []

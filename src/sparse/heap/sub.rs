@@ -9,7 +9,7 @@ use ordered_iter::OrderedMapIterator;
 impl<T, V> Sub<V> for SparseVector<T>
 where
     T: Copy + Zero + Sub<T, Output = T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
     type Output = Self;
@@ -24,7 +24,7 @@ where
 impl<T, V> SubAssign<V> for SparseVector<T>
 where
     T: Copy + Zero + Sub<T, Output = T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator + OrderedMapIterator<Key = usize, Val = T>,
 {
     #[inline]

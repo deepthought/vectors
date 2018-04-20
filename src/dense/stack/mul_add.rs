@@ -8,7 +8,7 @@ impl<T, A, V> MulAdd<T, V> for DenseVector<A>
 where
     T: Copy + MulAddAssign<T, T>,
     A: Array<Item = T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     type Output = Self;
@@ -24,7 +24,7 @@ impl<T, A, V> MulAddAssign<T, V> for DenseVector<A>
 where
     T: Copy + MulAddAssign<T, T>,
     A: Array<Item = T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     #[inline]

@@ -8,7 +8,7 @@ impl<T, A, V> Sub<V> for DenseVector<A>
 where
     T: Copy + SubAssign<T>,
     A: Array<Item = T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     type Output = Self;
@@ -24,7 +24,7 @@ impl<T, A, V> SubAssign<V> for DenseVector<A>
 where
     T: Copy + SubAssign<T>,
     A: Array<Item = T>,
-    V: IntoIterator<Item=(usize, T)>,
+    V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     #[inline]
