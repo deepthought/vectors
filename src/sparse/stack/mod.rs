@@ -4,12 +4,10 @@
 
 //! Sparse stack-allocated vector representation.
 
-use std::fmt;
-use std::iter::{IntoIterator, FromIterator};
 use std::ops::{Add, Sub, Mul, Div};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign};
 
-use num_traits::{NumAssign, Zero, MulAdd, MulAddAssign};
+use num_traits::{NumAssign, MulAdd, MulAddAssign};
 use arrayvec::{Array, ArrayVec};
 
 use {Vector, VectorOps, VectorAssignOps};

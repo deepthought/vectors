@@ -1,8 +1,8 @@
 use std::ops::{Add, Mul};
 
 use num_traits::Zero;
-use arrayvec::Array;
 use ordered_iter::OrderedMapIterator;
+use arrayvec::Array;
 
 use Dot;
 use super::SparseVector;
