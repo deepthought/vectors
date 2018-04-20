@@ -4,8 +4,6 @@
 
 //! Dense heap-allocated vector representation.
 
-use std::fmt;
-use std::iter::FromIterator;
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use num_traits::{NumAssign, MulAdd, MulAddAssign};
