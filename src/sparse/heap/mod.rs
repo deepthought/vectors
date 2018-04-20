@@ -16,13 +16,15 @@ use num_traits::{NumAssign, Zero, MulAdd, MulAddAssign};
 
 use ordered_iter::OrderedMapIterator;
 
-use {Vector, VectorExt, VectorOps, VectorAssignOps};
+use {Vector, VectorExt, VectorOps, VectorAssignOps, Dot};
 
 mod add;
 mod sub;
 mod mul;
 mod div;
 mod mul_add;
+
+mod dot;
 
 mod debug;
 mod iter;
@@ -85,10 +87,6 @@ where
     Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
 {
-    fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot!(T => (self, rhs))
-    }
-
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
         squared_distance_generic!(T => (self, rhs))
     }
@@ -100,10 +98,6 @@ where
     Self: Vector<T, Scalar = T>,
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
 {
-    fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot!(T => (self, rhs))
-    }
-
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
         squared_distance_generic!(T => (self, rhs))
     }
@@ -115,10 +109,6 @@ where
     Self: Vector<T, Scalar = T>,
     T: Copy + Signed + NumAssign + MulAdd<T, T, Output = T>,
 {
-    fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot!(T => (self, rhs))
-    }
-
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
         squared_distance_signed!(T => (self, rhs))
     }
@@ -135,14 +125,6 @@ mod test {
         let values: Vec<_> = vec![(0, 5.0)];
         let subject = SparseVector::from(values.clone());
         expect!(subject.components).to(be_equal_to(values));
-    }
-
-    #[test]
-    fn dot() {
-        let subject = SparseVector::from(vec![(0, 0.2), (1, 0.5), (2, 1.0), (4, 2.0), (5, 4.0)]);
-        let other = SparseVector::from(vec![(1, 0.1), (2, 0.2), (3, 0.3), (5, 0.4), (6, 0.5)]);
-        let dot = subject.dot(&other);
-        expect!(dot).to(be_close_to(1.85));
     }
 
     #[test]

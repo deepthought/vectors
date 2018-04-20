@@ -9,16 +9,18 @@ use std::iter::FromIterator;
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 use std::cmp::Ordering;
 
-use num_traits::{ NumAssign, MulAdd, MulAddAssign};
+use num_traits::{NumAssign, MulAdd, MulAddAssign};
 use arrayvec::{Array, ArrayVec};
 
-use {Vector, VectorExt, VectorOps, VectorAssignOps};
+use {Vector, VectorExt, VectorOps, VectorAssignOps, Dot};
 
 mod add;
 mod sub;
 mod mul;
 mod div;
 mod mul_add;
+
+mod dot;
 
 mod debug;
 mod iter;
@@ -124,10 +126,6 @@ where
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Copy + Array<Item = T>,
 {
-    fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot!(T => (self, rhs))
-    }
-
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
         squared_distance_generic!(T => (self, rhs))
     }
@@ -140,10 +138,6 @@ where
     T: Copy + PartialOrd + NumAssign + MulAdd<T, T, Output = T>,
     A: Copy + Array<Item = T>,
 {
-    fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot!(T => (self, rhs))
-    }
-
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
         squared_distance_generic!(T => (self, rhs))
     }
@@ -156,10 +150,6 @@ where
     T: Copy + Signed + NumAssign + MulAdd<T, T, Output = T>,
     A: Copy + Array<Item = T>,
 {
-    fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot!(T => (self, rhs))
-    }
-
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
         squared_distance_signed!(T => (self, rhs))
     }

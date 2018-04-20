@@ -59,7 +59,7 @@ pub trait Vector<Scalar>: PartialEq + VectorOps<Self, Scalar> {
     type Scalar;
 
     // /// Calculates the dot-product between `self` and `rhs`.
-    // fn dot(&self, rhs: &Self) -> Self::Scalar;
+    // fn dot(self, rhs: &Self) -> Self::Scalar;
     //
     // /// Calculates the squared euclidian distance between `self` and `rhs`.
     // fn squared_distance(&self, rhs: &Self) -> Self::Scalar;
@@ -74,9 +74,6 @@ pub trait Vector<Scalar>: PartialEq + VectorOps<Self, Scalar> {
 }
 
 pub trait VectorExt<Scalar>: Vector<Scalar> {
-    /// Calculates the dot-product between `self` and `rhs`.
-    fn dot(&self, rhs: &Self) -> Self::Scalar;
-
     /// Calculates the squared euclidian distance between `self` and `rhs`.
     fn squared_distance(&self, rhs: &Self) -> Self::Scalar;
 
@@ -114,3 +111,10 @@ impl<T, S> VectorAssignRef<S> for T
 where
     T: VectorAssign<S> + for<'a> VectorAssignOps<&'a T, S>
 {}
+
+pub trait Dot<Rhs = Self> {
+    type Scalar;
+
+    /// Calculates the dot-product between `self` and `rhs`.
+    fn dot(self, rhs: Rhs) -> Self::Scalar;
+}
