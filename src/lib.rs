@@ -127,3 +127,18 @@ pub trait Dot<Rhs = Self> {
     /// Calculates the dot-product between `self` and `rhs`.
     fn dot(self, rhs: Rhs) -> Self::Scalar;
 }
+
+pub trait Distance<Rhs = Self> {
+    type Scalar;
+
+    /// Calculates the squared euclidian distance between `self` and `rhs`.
+    fn squared_distance(&self, rhs: Rhs) -> Self::Scalar;
+
+    /// Calculates the euclidian distance between `self` and `rhs`.
+    fn distance(&self, rhs: Rhs) -> Self::Scalar
+    where
+        Self::Scalar: Real,
+    {
+        self.squared_distance(rhs).sqrt()
+    }
+}
