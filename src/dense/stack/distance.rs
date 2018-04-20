@@ -1,18 +1,17 @@
-use std::ops::{Add, Sub, Mul};
-
 use arrayvec::Array;
-use num_traits::{Zero, Signed};
+use num_traits::Signed;
 
 use Distance;
 use super::DenseVector;
 
-impl<'a, T, A, V> Distance<V> for &'a DenseVector<A>
+impl<'a, T, A, V, I, J> Distance<V> for &'a DenseVector<A>
 where
-    Self: IntoIterator<Item = (usize, T)>,
-    T: Copy + Signed + Add<T, Output = T> + Sub<T, Output = T> + Mul<T, Output = T> + Zero,
-    A: Copy + Array<Item = T>,
-    V: IntoIterator<Item = (usize, T)>,
-    <V as IntoIterator>::IntoIter: ExactSizeIterator,
+    Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
+    T: Copy + Signed,
+    A: Array<Item = T>,
+    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
+    I: ExactSizeIterator<Item = (usize, T)>,
+    J: ExactSizeIterator<Item = (usize, T)>,
 {
     type Scalar = T;
 
@@ -20,7 +19,6 @@ where
         squared_distance_dense!(T => (self, rhs))
     }
 }
-
 
 #[cfg(test)]
 mod test {

@@ -1,18 +1,17 @@
-use std::ops::{Add, Mul};
-
-use num_traits::Zero;
+use num_traits::Num;
 use arrayvec::Array;
 
 use Dot;
 use super::DenseVector;
 
-impl<'a, T, A, V> Dot<V> for &'a DenseVector<A>
+impl<'a, T, A, V, I, J> Dot<V> for &'a DenseVector<A>
 where
-    Self: IntoIterator<Item = (usize, T)>,
-    T: Copy + Add<T, Output = T> + Mul<T, Output = T> + Zero,
+    Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
+    T: Num,
     A: Array<Item = T>,
-    V: IntoIterator<Item = (usize, T)>,
-    <V as IntoIterator>::IntoIter: ExactSizeIterator,
+    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
+    I: ExactSizeIterator<Item = (usize, T)>,
+    J: ExactSizeIterator<Item = (usize, T)>,
 {
     type Scalar = T;
 

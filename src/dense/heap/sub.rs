@@ -6,7 +6,7 @@ use super::*;
 
 impl<T, V> Sub<V> for DenseVector<T>
 where
-    T: Copy + SubAssign<T>,
+    T: SubAssign<T>,
     V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
@@ -21,14 +21,14 @@ where
 
 impl<T, V> SubAssign<V> for DenseVector<T>
 where
-    T: Copy + SubAssign<T>,
+    T: SubAssign<T>,
     V: IntoIterator<Item = (usize, T)>,
     <V as IntoIterator>::IntoIter: ExactSizeIterator,
 {
     #[inline]
     fn sub_assign(&mut self, rhs: V) {
         let iter = rhs.into_iter();
-        assert_eq!(self.len(), iter.len());
+        debug_assert_eq!(self.len(), iter.len());
         for (lhs, (_, rhs)) in self.components.iter_mut().zip(iter) {
             *lhs -= rhs;
         }

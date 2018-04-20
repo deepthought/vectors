@@ -1,16 +1,15 @@
-use std::ops::{Add, Sub, Mul};
-
-use num_traits::{Zero, Signed};
+use num_traits::Signed;
 
 use Distance;
 use super::DenseVector;
 
-impl<'a, T, V> Distance<V> for &'a DenseVector<T>
+impl<'a, T, V, I, J> Distance<V> for &'a DenseVector<T>
 where
-    Self: IntoIterator<Item = (usize, T)>,
-    T: Copy + Signed + Add<T, Output = T> + Sub<T, Output = T> + Mul<T, Output = T> + Zero,
-    V: IntoIterator<Item = (usize, T)>,
-    <V as IntoIterator>::IntoIter: ExactSizeIterator,
+    Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
+    T: Copy + Signed,
+    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
+    I: ExactSizeIterator<Item = (usize, T)>,
+    J: ExactSizeIterator<Item = (usize, T)>,
 {
     type Scalar = T;
 
