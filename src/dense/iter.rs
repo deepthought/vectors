@@ -4,6 +4,7 @@
 
 use ordered_iter::OrderedMapIterator;
 
+/// `DenseVector`'s `IntoIter`
 pub struct IntoIter<I>
 where
     I: IntoIterator,
@@ -16,6 +17,7 @@ impl<I> IntoIter<I>
 where
     I: IntoIterator,
 {
+    /// Creates an `IntoIter` from a base `IntoIterator` of dense components
     pub fn new(iter: I) -> Self {
         IntoIter { index: 0, inner: iter.into_iter() }
     }
@@ -63,6 +65,7 @@ where
     type Val = T;
 }
 
+/// `&DenseVector`'s `IntoIter`
 pub struct Iter<'a, T>
 where
     T: 'a
@@ -72,6 +75,7 @@ where
 }
 
 impl<'a, T> Iter<'a, T> {
+    /// Creates an `Iter` from a slice of dense components
     pub fn new(iter: &'a [T]) -> Self {
         Iter { index: 0, inner: iter.into_iter() }
     }

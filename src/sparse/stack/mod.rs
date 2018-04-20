@@ -38,16 +38,19 @@ impl<T, A> SparseVector<A>
 where
     A: Array<Item = (usize, T)>,
 {
+    /// The number of components in `self`
     #[inline]
     pub fn len(&self) -> usize {
         self.components.len()
     }
 
+    /// `true` if `self.len() == 0`, otherwise `false`
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.components.is_empty()
     }
 
+    /// A borrowing iterator over `self`
     #[inline]
     pub fn iter<'a>(&'a self) -> Iter<'a, T> {
         Iter::new(&self.components[..])

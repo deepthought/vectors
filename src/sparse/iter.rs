@@ -4,6 +4,7 @@
 
 use ordered_iter::OrderedMapIterator;
 
+/// `SparseVector`'s `IntoIter`
 pub struct IntoIter<I>
 where
     I: IntoIterator,
@@ -15,6 +16,7 @@ impl<I> IntoIter<I>
 where
     I: IntoIterator,
 {
+    /// Creates an `IntoIter` from a base `IntoIterator` of dense components
     pub fn new(iter: I) -> Self {
         IntoIter { inner: iter.into_iter() }
     }
@@ -56,6 +58,7 @@ where
     type Val = T;
 }
 
+/// `&SparseVector`'s `IntoIter`
 pub struct Iter<'a, T>
 where
     T: 'a
@@ -64,6 +67,7 @@ where
 }
 
 impl<'a, T> Iter<'a, T> {
+    /// Creates an `Iter` from a slice of dense components
     #[inline]
     pub fn new(iter: &'a [(usize, T)]) -> Self {
         Iter { inner: iter.into_iter() }

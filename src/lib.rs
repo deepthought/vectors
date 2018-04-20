@@ -7,6 +7,8 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(not(test), feature(lang_items))]
 
+#![warn(missing_docs)]
+
 #[cfg(not(feature = "std"))]
 extern crate core as std;
 
@@ -22,8 +24,6 @@ extern crate num_traits;
 extern crate ordered_iter;
 extern crate arrayvec;
 
-// mod shared;
-
 pub mod dense;
 pub mod sparse;
 
@@ -31,6 +31,7 @@ use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use num_traits::{MulAdd, MulAddAssign, real::Real};
 
+/// The crate's prelude
 pub mod prelude {
     pub use super::{
         VectorOps, VectorAssignOps,
@@ -105,14 +106,18 @@ where
     T: VectorAssign<S> + for<'a> VectorAssignOps<&'a T, S>
 {}
 
+/// The trait for types supporting the calculation of the dot product
 pub trait Dot<Rhs = Self>: Sized {
+    /// The scalar type returned by `self`'s dot product
     type Scalar;
 
     /// Calculates the dot-product between `self` and `rhs`.
     fn dot(self, rhs: Rhs) -> Self::Scalar;
 }
 
+/// The trait for types supporting the calculation of distance
 pub trait Distance<Rhs = Self>: Sized {
+    /// The scalar type returned by `self`'s distance
     type Scalar;
 
     /// Calculates the squared euclidian distance between `self` and `rhs`.
