@@ -34,6 +34,15 @@ use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use num_traits::{MulAdd, MulAddAssign, real::Real};
 
+pub mod prelude {
+    pub use super::{
+        VectorOps, VectorAssignOps,
+        Vector, VectorExt, VectorRef,
+        VectorAssign, VectorAssignRef,
+        Dot, Distance
+    };
+}
+
 /// The trait for vector types implementing basic numeric operations.
 pub trait VectorOps<Vector, Scalar>: Sized
     + Add<Vector, Output = Self>
