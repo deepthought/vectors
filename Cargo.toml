@@ -20,6 +20,10 @@ version = "0.1.1"
 arrayvec = "0.4.7"
 ordered_iter = "0.1.0"
 
+[dependencies.missing_mpl]
+version = "0.1.0"
+optional = true
+
 [dependencies.num-traits]
 branch = "mul_add"
 git = "https://github.com/regexident/num-traits.git"
@@ -30,3 +34,4 @@ expectest = "0.6.0"
 [features]
 default = ["std"]
 std = []
+nightly = ["missing_mpl"]
