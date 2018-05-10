@@ -14,24 +14,21 @@ license = "MPL-2.0"
 name = "vectors"
 readme = "README.md"
 repository = "https://github.com/deepthought/vectors"
-version = "0.1.1"
+version = "0.2.0"
 
 [dependencies]
 arrayvec = "0.4.7"
+num-traits = "0.2.3"
 ordered_iter = "0.1.0"
 
 [dependencies.missing_mpl]
-version = "0.1.0"
 optional = true
-
-[dependencies.num-traits]
-branch = "mul_add"
-git = "https://github.com/regexident/num-traits.git"
+version = "~0.1.1"
 
 [dev-dependencies]
-expectest = "0.6.0"
+expectest = "0.9.2"
 
 [features]
 default = ["std"]
-std = []
 nightly = ["missing_mpl"]
+std = []
