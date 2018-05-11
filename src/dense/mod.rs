@@ -4,9 +4,6 @@
 
 //! Dense vector representations.
 
-#[macro_use]
-mod shared;
-
 mod iter;
 
 pub mod stack;

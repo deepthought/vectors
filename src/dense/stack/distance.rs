@@ -9,19 +9,21 @@ use arrayvec::Array;
 use Distance;
 use super::DenseVector;
 
-impl<'a, T, A, V, I, J> Distance<V> for &'a DenseVector<A>
+impl<T, A> Distance for DenseVector<A>
 where
-    Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
     T: Copy + Signed,
     A: Array<Item = T>,
-    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
-    I: ExactSizeIterator<Item = (usize, T)>,
-    J: ExactSizeIterator<Item = (usize, T)>,
 {
     type Scalar = T;
 
-    fn squared_distance(self, rhs: V) -> Self::Scalar {
-        squared_distance_dense!(T => (self, rhs))
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
+        let lhs_iter = self.iter();
+        let rhs_iter = rhs.iter();
+        debug_assert_eq!(lhs_iter.len(), rhs_iter.len());
+        lhs_iter.zip(rhs_iter).fold(T::zero(), |sum, ((_, lhs), (_, rhs))| {
+            let delta = lhs - rhs;
+            sum + (delta * delta)
+        })
     }
 }
 

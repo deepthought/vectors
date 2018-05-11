@@ -119,15 +119,15 @@ pub trait Dot: Sized {
 }
 
 /// The trait for types supporting the calculation of distance
-pub trait Distance<Rhs = Self>: Sized {
+pub trait Distance: Sized {
     /// The scalar type returned by `self`'s distance
     type Scalar;
 
     /// Calculates the squared euclidian distance between `self` and `rhs`.
-    fn squared_distance(self, rhs: Rhs) -> Self::Scalar;
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar;
 
     /// Calculates the euclidian distance between `self` and `rhs`.
-    fn distance(self, rhs: Rhs) -> Self::Scalar
+    fn distance(&self, rhs: &Self) -> Self::Scalar
     where
         Self::Scalar: Real,
     {
