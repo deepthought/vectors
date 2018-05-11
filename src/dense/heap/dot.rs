@@ -7,17 +7,15 @@ use num_traits::Num;
 use Dot;
 use super::DenseVector;
 
-impl<'a, T, V, I, J> Dot<V> for &'a DenseVector<T>
+impl<'a, T, I> Dot for &'a DenseVector<T>
 where
     Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
     T: Num,
-    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
     I: ExactSizeIterator<Item = (usize, T)>,
-    J: ExactSizeIterator<Item = (usize, T)>,
 {
     type Scalar = T;
 
-    fn dot(self, rhs: V) -> Self::Scalar {
+    fn dot(self, rhs: &Self) -> Self::Scalar {
         dot_dense!(T => (self, rhs))
     }
 }

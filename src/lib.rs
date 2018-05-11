@@ -111,12 +111,12 @@ where
 {}
 
 /// The trait for types supporting the calculation of the dot product
-pub trait Dot<Rhs = Self>: Sized {
+pub trait Dot: Sized {
     /// The scalar type returned by `self`'s dot product
     type Scalar;
 
     /// Calculates the dot-product between `self` and `rhs`.
-    fn dot(self, rhs: Rhs) -> Self::Scalar;
+    fn dot(self, rhs: &Self) -> Self::Scalar;
 }
 
 /// The trait for types supporting the calculation of distance
