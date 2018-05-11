@@ -8,18 +8,19 @@ use ordered_iter::OrderedMapIterator;
 use Distance;
 use super::SparseVector;
 
-impl<'a, T, V, I, J> Distance<V> for &'a SparseVector<T>
+impl<T> Distance for SparseVector<T>
 where
-    Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
     T: Copy + Signed,
-    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
-    I: OrderedMapIterator<Key = usize, Val = T>,
-    J: OrderedMapIterator<Key = usize, Val = T>,
 {
     type Scalar = T;
 
-    fn squared_distance(self, rhs: V) -> Self::Scalar {
-        squared_distance_sparse!(T => (self, rhs))
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
+        let lhs_iter = self.iter();
+        let rhs_iter = rhs.iter();
+        lhs_iter.inner_join_map(rhs_iter).fold(T::zero(), |sum, (_, (lhs, rhs))| {
+            let delta = lhs - rhs;
+            sum + (delta * delta)
+        })
     }
 }
 

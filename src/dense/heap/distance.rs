@@ -7,18 +7,20 @@ use num_traits::Signed;
 use Distance;
 use super::DenseVector;
 
-impl<'a, T, V, I, J> Distance<V> for &'a DenseVector<T>
+impl<T> Distance for DenseVector<T>
 where
-    Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
     T: Copy + Signed,
-    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
-    I: ExactSizeIterator<Item = (usize, T)>,
-    J: ExactSizeIterator<Item = (usize, T)>,
 {
     type Scalar = T;
 
-    fn squared_distance(self, rhs: V) -> Self::Scalar {
-        squared_distance_dense!(T => (self, rhs))
+    fn squared_distance(&self, rhs: &Self) -> Self::Scalar {
+        let lhs_iter = self.iter();
+        let rhs_iter = rhs.iter();
+        debug_assert_eq!(lhs_iter.len(), rhs_iter.len());
+        lhs_iter.zip(rhs_iter).fold(T::zero(), |sum, ((_, lhs), (_, rhs))| {
+            let delta = lhs - rhs;
+            sum + (delta * delta)
+        })
     }
 }
 

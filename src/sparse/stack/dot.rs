@@ -11,17 +11,19 @@ use arrayvec::Array;
 use Dot;
 use super::SparseVector;
 
-impl<'a, T, A, I> Dot for &'a SparseVector<A>
+impl<T, A> Dot for SparseVector<A>
 where
-    Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
-    T: Add<T, Output = T> + Mul<T, Output = T> + Zero,
+    T: Copy + Add<T, Output = T> + Mul<T, Output = T> + Zero,
     A: Array<Item = (usize, T)>,
-    I: OrderedMapIterator<Key = usize, Val = T>,
 {
     type Scalar = T;
 
     fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot_sparse!(T => (self, rhs))
+        let lhs_iter = self.iter();
+        let rhs_iter = rhs.iter();
+        lhs_iter.inner_join_map(rhs_iter).fold(T::zero(), |sum, (_, (lhs, rhs))| {
+            sum + (lhs * rhs)
+        })
     }
 }
 

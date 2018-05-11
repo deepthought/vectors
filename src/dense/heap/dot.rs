@@ -7,16 +7,19 @@ use num_traits::Num;
 use Dot;
 use super::DenseVector;
 
-impl<'a, T, I> Dot for &'a DenseVector<T>
+impl<'a, T> Dot for DenseVector<T>
 where
-    Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
-    T: Num,
-    I: ExactSizeIterator<Item = (usize, T)>,
+    T: Copy + Num,
 {
     type Scalar = T;
 
     fn dot(&self, rhs: &Self) -> Self::Scalar {
-        dot_dense!(T => (self, rhs))
+        debug_assert_eq!(self.len(), rhs.len());
+        let lhs_iter = self.components.iter();
+        let rhs_iter = rhs.components.iter();
+        lhs_iter.zip(rhs_iter).fold(T::zero(), |sum, (lhs, rhs)| {
+            sum + ((*lhs) * (*rhs))
+        })
     }
 }
 
@@ -30,6 +33,7 @@ mod test {
     fn dot() {
         let subject = DenseVector::from(vec![0.0, 0.5, 1.0, 2.0, 4.0]);
         let other = DenseVector::from(vec![0.1, 0.2, 0.3, 0.4, 0.0]);
+
         let dot = subject.dot(&other);
         expect!(dot).to(be_close_to(1.2));
     }
