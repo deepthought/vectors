@@ -10,17 +10,15 @@ use ordered_iter::OrderedMapIterator;
 use Dot;
 use super::SparseVector;
 
-impl<'a, T, V, I, J> Dot<V> for &'a SparseVector<T>
+impl<'a, T, I> Dot for &'a SparseVector<T>
 where
     Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
     T: Add<T, Output = T> + Mul<T, Output = T> + Zero,
-    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
     I: OrderedMapIterator<Key = usize, Val = T>,
-    J: OrderedMapIterator<Key = usize, Val = T>,
 {
     type Scalar = T;
 
-    fn dot(self, rhs: V) -> Self::Scalar {
+    fn dot(&self, rhs: &Self) -> Self::Scalar {
         dot_sparse!(T => (self, rhs))
     }
 }

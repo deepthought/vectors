@@ -9,18 +9,16 @@ use arrayvec::Array;
 use Dot;
 use super::DenseVector;
 
-impl<'a, T, A, V, I, J> Dot<V> for &'a DenseVector<A>
+impl<'a, T, A, I> Dot for &'a DenseVector<A>
 where
     Self: IntoIterator<IntoIter = I, Item = (usize, T)>,
     T: Num,
     A: Array<Item = T>,
-    V: IntoIterator<IntoIter = J, Item = (usize, T)>,
     I: ExactSizeIterator<Item = (usize, T)>,
-    J: ExactSizeIterator<Item = (usize, T)>,
 {
     type Scalar = T;
 
-    fn dot(self, rhs: V) -> Self::Scalar {
+    fn dot(&self, rhs: &Self) -> Self::Scalar {
         dot_dense!(T => (self, rhs))
     }
 }
