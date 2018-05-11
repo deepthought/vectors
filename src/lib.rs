@@ -5,7 +5,6 @@
 //! Vector representations for use in high dimensional vector spaces.
 
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(not(test), feature(lang_items))]
 
 #![cfg_attr(feature = "missing_mpl", feature(plugin))]
 #![cfg_attr(feature = "missing_mpl", plugin(missing_mpl))]
